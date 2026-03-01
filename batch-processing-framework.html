@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Batch Processing Framework</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">Batch processing framework</div>
+          </div>
+          <div class="tagline">Orchestration, dependencies, and idempotency</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>Batch Families</h2>
+        <ul>
+          <li><strong>Daily</strong>: pricing ingestion, valuation, reconciliations, audit rollups</li>
+          <li><strong>Weekly/Periodic</strong>: maintenance, recomputation, archival/historization</li>
+          <li><strong>Pricing</strong>: market data alignment, late price corrections, snapshot publication</li>
+          <li><strong>Event-driven catch-up</strong>: reprocess subsets after upstream corrections</li>
+        </ul>
+
+        <h2>Orchestration Model</h2>
+        <p>
+          The batch engine executes parameterized jobs in a dependency graph, with safeguards that support reruns
+          without creating inconsistent outcomes.
+        </p>
+
+        <div class="mermaid">
+flowchart TD
+  START([Start Batch Window]) --> PRE[Pre-checks: calendars, inputs, locks]
+  PRE --> ING[Ingest pricing / reference data]
+  ING --> VAL[Valuation & position updates]
+  VAL --> HIST[Historization / snapshots]
+  HIST --> PUB[Publish milestones / notifications]
+  PUB --> END([End Batch Window])
+
+  PRE -->|failure| ABORT[Abort + alert]
+  ING -->|late prices| ING
+  VAL -->|retry safe| VAL
+        </div>
+
+        <h2>Key Design Requirements</h2>
+        <ul>
+          <li><strong>Dependency sequencing</strong>: enforce prerequisites (inputs, prior jobs, zone readiness).</li>
+          <li><strong>Idempotency</strong>: rerunning a job produces the same end state for the same inputs.</li>
+          <li><strong>Partitioning</strong>: batch workloads can be segmented (e.g., by portfolio group, by time zone).</li>
+          <li><strong>Observability</strong>: every batch step emits metrics and audit records for traceability.</li>
+        </ul>
+
+        <h2>Generic Command Structure (Example)</h2>
+        <pre><code># illustrative CLI pattern (non-proprietary)
+# run a batch family for a zone with an explicit valuation date
+batchctl run \
+  --family daily \
+  --zone APAC \
+  --valuation-date 2026-03-01 \
+  --max-parallel 8 \
+  --retry-policy per_event \
+  --dry-run false
+</code></pre>
+
+        <h2>Zone-Based Execution</h2>
+        <p>
+          A common approach is to run the same job graph multiple times per “country zone” (or processing zone), each
+          with its own calendar and trading day boundaries.
+        </p>
+
+        <div class="note">
+          This section pairs with <a href="multi-time-zone-processing.html">Multi-Time Zone Processing</a>.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

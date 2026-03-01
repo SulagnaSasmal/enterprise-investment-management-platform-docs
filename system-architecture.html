@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>System Architecture</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">System architecture (components and flows)</div>
+          </div>
+          <div class="tagline">Abstracted reference architecture</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>Component Model</h2>
+        <p>
+          This platform is modeled as a set of services and engines: interactive order entry, an application server
+          hosting business logic, a batch engine, and shared platform services (cache, notifications, audit).
+        </p>
+
+        <div class="mermaid">
+flowchart LR
+  U[Trader UI / Ops UI] -->|HTTPS/API| API[API Gateway]
+  API --> AS[Application Server Cluster]
+
+  subgraph AS[Application Server Cluster]
+    BL[Business Logic Layer]
+    CACH[Cache Layer]
+    EVT[Event Dispatcher]
+  end
+
+  AS --> DB[(Relational Database)]
+  AS --> MQ[(Event Bus / Queue)]
+  AS --> NOTIF[Notification Service]
+
+  BATCH[Batch Engine] --> DB
+  BATCH --> MQ
+  MQ --> AS
+  MQ --> DW[(Analytics / Warehouse - optional)]
+
+  OPS[Monitoring & Alerting] -.metrics/logs.-> AS
+  OPS -.metrics/logs.-> BATCH
+        </div>
+
+        <h2>Request Flow (Online)</h2>
+        <ul>
+          <li>UI/API call reaches the application server through an API gateway.</li>
+          <li>Business logic validates inputs (e.g., eligibility, limits, compliance checks).</li>
+          <li>State transitions are written to the database; events are published for downstream processing.</li>
+          <li>Cache invalidations/reloads occur based on change events and controlled reload rules.</li>
+        </ul>
+
+        <h2>Order State Transitions (Conceptual)</h2>
+        <div class="mermaid">
+stateDiagram-v2
+  [*] --> New
+  New --> Validated
+  Validated --> Routed
+  Routed --> Executed
+  Executed --> Allocated
+  Allocated --> Settled
+
+  Validated --> Rejected
+  Routed --> Canceled
+  Executed --> Corrected
+  Settled --> Corrected
+
+  Corrected --> Allocated
+  Rejected --> [*]
+  Canceled --> [*]
+        </div>
+
+        <h2>Cache Reload Mechanisms</h2>
+        <ul>
+          <li><strong>Event-triggered</strong>: reload specific cache regions when relevant entities change.</li>
+          <li><strong>Batch-triggered</strong>: after batch milestones (pricing completed, valuation computed), refresh dependent caches.</li>
+          <li><strong>Rollover-triggered</strong>: at controlled date rollover, move D → D+1 and re-evaluate date-sensitive cache entries.</li>
+        </ul>
+
+        <div class="note">
+          Diagrams are intentionally simplified. The goal is to communicate system responsibilities and flows — not to
+          replicate a proprietary implementation.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

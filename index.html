@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enterprise Investment Management Platform — Docs</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">Architecture & release documentation sample (abstracted)</div>
+          </div>
+          <div class="tagline">Audience: Architects • Release Managers • Operations</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>Executive Summary</h2>
+        <p>
+          This repository is a portfolio-quality, architecture-focused documentation set for an enterprise investment
+          management platform. It is intentionally <strong>conceptual and abstracted</strong>: it demonstrates how to document
+          high-availability application servers, batch processing orchestration, global trading time zone logic, and
+          release-governance impacts — <em>without exposing any proprietary implementation details</em>.
+        </p>
+
+        <div class="note">
+          <strong>Scope disclaimer:</strong> No proprietary code, customer identifiers, internal hostnames, file paths, or real
+          database table names are included. Any examples are illustrative.
+        </div>
+
+        <h2>System Context</h2>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>What this platform does</h3>
+            <ul>
+              <li>Supports the institutional order lifecycle: capture → validate → route → execute → allocate → settle</li>
+              <li>Runs post-trade processing via event-driven and batch frameworks (valuation, pricing, historization)</li>
+              <li>Maintains positions, cash, holdings, and portfolio analytics with auditability</li>
+              <li>Operates globally across multiple market calendars and time zones</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>What this documentation demonstrates</h3>
+            <ul>
+              <li>Architecture-level system decomposition and component responsibilities</li>
+              <li>24x7 application server design with date rollover and cache lifecycle</li>
+              <li>Batch orchestration concepts: dependencies, idempotency, and zone segmentation</li>
+              <li>Failover and per-event transactional guarantees with audit trails</li>
+              <li>Release impact governance: ops readiness, monitoring, and risk framing</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Key Enhancements Covered</h2>
+        <ul>
+          <li><strong>Zero-downtime / 24x7 server model</strong> to avoid scheduled downtime during batch windows</li>
+          <li><strong>Multi-time zone processing</strong> using portfolio-to-zone association and zone-based batch segmentation</li>
+          <li><strong>Controlled failover</strong> with event-level retries, transaction isolation, and audit observability</li>
+          <li><strong>Release governance</strong> focused on operational and backward-compatibility impacts</li>
+        </ul>
+
+        <h2>How to Navigate</h2>
+        <p>
+          Use the top navigation to move through the docs. If you want the fastest signal, start with
+          <a href="system-architecture.html">System Architecture</a>, then <a href="batch-processing-framework.html">Batch Framework</a>
+          and <a href="multi-time-zone-processing.html">Multi-Time Zone</a>.
+        </p>
+
+        <hr />
+        <div class="kv">
+          <div class="k">Primary audience</div>
+          <div class="v">Architecture reviewers, SRE/Ops, release managers, platform engineers</div>
+          <div class="k">Delivery style</div>
+          <div class="v">Docs-as-product: clear assumptions, diagrams, release framing, and operational impacts</div>
+          <div class="k">Hosting</div>
+          <div class="v">Static HTML suitable for GitHub Pages</div>
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

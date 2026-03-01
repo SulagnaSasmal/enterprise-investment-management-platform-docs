@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Failover & Audit Design</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">Failover & audit design</div>
+          </div>
+          <div class="tagline">Per-event transaction isolation and controlled retries</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>Design Goals</h2>
+        <ul>
+          <li><strong>Data integrity</strong>: failures do not corrupt positions, cash, or state transitions.</li>
+          <li><strong>Deterministic retries</strong>: reprocessing produces consistent outcomes (idempotency).</li>
+          <li><strong>Auditability</strong>: every processing decision can be traced end-to-end.</li>
+          <li><strong>Operational control</strong>: failover modes are explicit, observable, and reversible.</li>
+        </ul>
+
+        <h2>Event-Level Transaction Isolation</h2>
+        <p>
+          A common pattern is <strong>per-event transactional processing</strong>: each event (or small event batch) is processed
+          in its own database transaction, allowing partial progress while isolating failures.
+        </p>
+
+        <div class="mermaid">
+sequenceDiagram
+  autonumber
+  participant Q as Event Queue
+  participant W as Worker
+  participant DB as Database
+  participant A as Audit
+
+  Q->>W: Deliver event E
+  W->>A: Write audit row (E, status=RECEIVED)
+  W->>DB: BEGIN TX
+  W->>DB: Apply business updates for E
+  alt success
+    W->>DB: COMMIT
+    W->>A: Update audit (status=SUCCESS)
+  else failure
+    W->>DB: ROLLBACK
+    W->>A: Update audit (status=FAILED, error_code)
+    W->>Q: Requeue E (retry policy)
+  end
+        </div>
+
+        <h2>Audit Table (Generic)</h2>
+        <p>
+          The audit model typically captures stable identifiers, processing state, and retry context. Names and exact
+          schemas are intentionally generic.
+        </p>
+        <pre><code>EVENT_PROCESSING_AUDIT
+  - event_id (stable)
+  - event_type
+  - portfolio_id (or partition key)
+  - business_date
+  - status (RECEIVED|IN_PROGRESS|SUCCESS|FAILED|SKIPPED)
+  - attempt_count
+  - last_error_code
+  - last_error_message (sanitized)
+  - started_at / finished_at
+  - worker_id (logical)
+</code></pre>
+
+        <h2>Failover Execution Mode</h2>
+        <ul>
+          <li><strong>Normal</strong>: active workers process events with standard retry policy.</li>
+          <li><strong>Degraded</strong>: reduce concurrency to protect dependent systems (DB, downstream services).</li>
+          <li><strong>Recovery</strong>: reprocess a targeted partition (e.g., a zone or portfolio group) from a checkpoint.</li>
+        </ul>
+
+        <div class="note">
+          The “mature” signal here is documenting how retries, isolation, and audit combine to produce operationally
+          safe behavior.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

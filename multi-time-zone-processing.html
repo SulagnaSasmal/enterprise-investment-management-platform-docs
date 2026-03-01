@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Multi-Time Zone Processing</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">Multi-time zone processing</div>
+          </div>
+          <div class="tagline">Zone segmentation, calendars, and trade-date logic</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>Problem Statement</h2>
+        <p>
+          Global investment operations must process portfolios across different market calendars and time zones.
+          “End of day” is not a single moment worldwide; batch operations must align to each portfolio’s zone.
+        </p>
+
+        <h2>Core Concepts</h2>
+        <ul>
+          <li><strong>Processing zone</strong>: a named zone aligned to a market calendar (e.g., region or country grouping).</li>
+          <li><strong>Portfolio-to-zone association</strong>: each portfolio is assigned a zone that defines trading day boundaries.</li>
+          <li><strong>Zone-based batch segmentation</strong>: batch jobs execute per zone, with zone-specific valuation dates.</li>
+          <li><strong>Trade date validation</strong>: a trade’s effective date must match the portfolio’s zone calendar rules.</li>
+        </ul>
+
+        <div class="mermaid">
+flowchart LR
+  P[Portfolio] --> Z[Processing Zone]
+  Z --> CAL[Market Calendar]
+  CAL --> BIZ[Business Date (D)]
+
+  subgraph Batch
+    B1[Pricing Ingestion]
+    B2[Valuation]
+    B3[Historization]
+  end
+
+  BIZ --> Batch
+  Batch --> OUT[Zone Outputs / Published Snapshots]
+        </div>
+
+        <h2>D+1 Trade Enablement (Conceptual)</h2>
+        <p>
+          In some operating models, a platform may accept “D+1” trades depending on market rules. The key is that
+          acceptance is deterministic and auditable per portfolio zone.
+        </p>
+        <ul>
+          <li>Validate trade date against zone calendar (holidays, weekends, market closures).</li>
+          <li>Ensure downstream processing (allocation, confirmation, settlement) uses a consistent business date.</li>
+          <li>Record the rule decision and calendar version in audit trails.</li>
+        </ul>
+
+        <h2>Database Impact (Abstracted)</h2>
+        <p>
+          Typical data changes include adding a zone reference to portfolios and storing processing boundaries in
+          configuration. Exact schemas are intentionally not provided.
+        </p>
+
+        <div class="note">
+          The differentiator here is not “knowing time zones”; it’s documenting how time zones, calendars, and batch
+          windows intersect with the trading lifecycle.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

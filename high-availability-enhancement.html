@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>High Availability Enhancement</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">High availability & 24x7 server model</div>
+          </div>
+          <div class="tagline">Zero-downtime focus for batch windows</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>Objective</h2>
+        <p>
+          Enable a <strong>24x7 application server</strong> that remains available during batch processing windows, while
+          preserving correctness for date-sensitive operations (trade date, valuation date) and cache coherence.
+        </p>
+
+        <h2>Architecture Summary</h2>
+        <ul>
+          <li><strong>Active/active cluster</strong> of application servers behind an API gateway/load balancer</li>
+          <li><strong>Controlled process restart strategy</strong> (rolling restart) to apply configuration changes safely</li>
+          <li><strong>Cache invalidation rules</strong> aligned to events, batch milestones, and date rollover</li>
+          <li><strong>Global synchronization primitives</strong> to ensure consistent “business date” across nodes</li>
+        </ul>
+
+        <h2>Date Rollover (D → D+1)</h2>
+        <p>
+          Date rollover is treated as a coordinated lifecycle event, not a simple clock tick. Rollover may be triggered
+          by a scheduler based on zone calendars, with safeguards to prevent partial transitions.
+        </p>
+
+        <div class="mermaid">
+sequenceDiagram
+  autonumber
+  participant SCH as Scheduler
+  participant AS1 as App Server A
+  participant AS2 as App Server B
+  participant DB as Database
+  participant C as Cache
+
+  SCH->>DB: Mark rollover window start (D)
+  SCH->>AS1: Enter rollover mode
+  SCH->>AS2: Enter rollover mode
+  AS1->>C: Freeze date-sensitive regions
+  AS2->>C: Freeze date-sensitive regions
+  SCH->>DB: Advance business date to D+1 (atomic update)
+  AS1->>C: Refresh D+1 dependent caches
+  AS2->>C: Refresh D+1 dependent caches
+  SCH->>AS1: Exit rollover mode
+  SCH->>AS2: Exit rollover mode
+        </div>
+
+        <h2>Order Eligibility Cleanup</h2>
+        <ul>
+          <li>Re-evaluate orders with date constraints (valid-from/valid-until, market calendar rules).</li>
+          <li>Expire or re-queue workflows that cannot proceed on D+1.</li>
+          <li>Write auditable lifecycle updates (who/what/when) for operational traceability.</li>
+        </ul>
+
+        <h2>Controlled Restarts</h2>
+        <p>
+          Zero downtime does not mean “never restart”. It means restarts are controlled and do not break inflight work.
+        </p>
+        <ul>
+          <li>Drain node → stop accepting new sessions → complete inflight work → restart → rejoin.</li>
+          <li>Use health checks and version compatibility to avoid mixed-mode failures.</li>
+        </ul>
+
+        <div class="note">
+          This section is framed as a platform enhancement: resilience, uptime, and predictable operations.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

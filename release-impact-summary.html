@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Release Impact Summary</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">Release impact summary</div>
+          </div>
+          <div class="tagline">Governance framing: ops, risk, compatibility</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>Release Overview</h2>
+        <p>
+          This section provides an executive, operations-ready summary of changes. It focuses on impacts and controls
+          rather than implementation details.
+        </p>
+
+        <h2>Functional Impact</h2>
+        <ul>
+          <li>Batch processing becomes zone-aware, aligning valuation to portfolio business dates.</li>
+          <li>Date rollover is formalized as a controlled lifecycle event (D → D+1).</li>
+          <li>Failover and retry behavior becomes explicit and auditable per event.</li>
+        </ul>
+
+        <h2>Operational Impact</h2>
+        <ul>
+          <li>New monitoring signals: batch milestones per zone, audit failure rates, rollover timing</li>
+          <li>Updated runbooks: recovery mode, targeted reprocess, configuration rollback</li>
+          <li>Capacity considerations: peak load may shift as zones run sequentially or in parallel</li>
+        </ul>
+
+        <h2>Deployment Considerations</h2>
+        <ul>
+          <li>Prefer rolling deploys for application server cluster to preserve uptime.</li>
+          <li>Apply database changes using backwards-compatible patterns where possible (expand → migrate → contract).</li>
+          <li>Introduce feature flags to control enablement by zone or portfolio group.</li>
+        </ul>
+
+        <h2>Backward Compatibility</h2>
+        <ul>
+          <li>Maintain old API behaviors while adding optional fields for zone/time semantics.</li>
+          <li>Default values should preserve prior single-zone behavior when zone is unspecified.</li>
+        </ul>
+
+        <h2>Risk Considerations</h2>
+        <ul>
+          <li>Incorrect calendar configuration can cause valuation mismatches or trade-date validation failures.</li>
+          <li>Rollover timing drift can create inconsistent “business date” across nodes if not coordinated.</li>
+          <li>Retry storms can overload DB; concurrency limits and degraded mode are required.</li>
+        </ul>
+
+        <h2>Monitoring Requirements</h2>
+        <ul>
+          <li>Per-zone batch success/failure and duration</li>
+          <li>Event processing audit status counts, retry depth, and oldest-failed age</li>
+          <li>Rollover start/end timestamps and node convergence time</li>
+        </ul>
+
+        <div class="note">
+          A strong release impact summary reads like an internal change advisory note: it makes operations confident.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

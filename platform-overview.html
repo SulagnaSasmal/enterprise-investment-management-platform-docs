@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Platform Overview</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">Platform overview (conceptual)</div>
+          </div>
+          <div class="tagline">Architecture & release documentation sample</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>What is an Investment Management Platform?</h2>
+        <p>
+          An investment management platform coordinates the full lifecycle of institutional trading and portfolio
+          operations: order creation, execution workflows, allocations, post-trade processing, valuation, and reporting.
+          It must be auditable, resilient, and able to process large volumes under strict market deadlines.
+        </p>
+
+        <h2>Core Domains</h2>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>Portfolio management</h3>
+            <ul>
+              <li>Portfolio hierarchy (accounts, strategies, sleeves)</li>
+              <li>Positions and holdings reconciliation</li>
+              <li>Cash and corporate actions impacts</li>
+              <li>Valuation and performance calculations</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Order lifecycle</h3>
+            <ul>
+              <li>Order capture and validation (limits, compliance, eligibility)</li>
+              <li>State transitions: new → routed → executed → allocated → settled</li>
+              <li>Event stream for post-trade workflows</li>
+              <li>Amend/cancel and correction handling</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Processing Models</h2>
+        <ul>
+          <li><strong>Online / request-driven</strong>: user actions and API calls for interactive workflows</li>
+          <li><strong>Event-driven</strong>: asynchronous processing for trade events, allocations, and downstream updates</li>
+          <li><strong>Batch-based</strong>: valuation, pricing, historization, and EOD/EOM aggregates</li>
+        </ul>
+
+        <h2>Operational Requirements</h2>
+        <ul>
+          <li>24x7 uptime with controlled date rollover (D → D+1)</li>
+          <li>Multi-market calendars and multi-time zone processing</li>
+          <li>Deterministic reruns (idempotency) and traceability (audit)</li>
+          <li>High availability and failover controls to protect data integrity</li>
+        </ul>
+
+        <div class="note">
+          This documentation intentionally avoids UI help and focuses on platform architecture and release governance.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

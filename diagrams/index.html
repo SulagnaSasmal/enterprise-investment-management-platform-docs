@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Diagrams</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script defer src="../assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">Diagram library</div>
+          </div>
+          <div class="tagline">Mermaid diagrams used across docs</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>System Architecture</h2>
+        <div class="mermaid">
+flowchart LR
+  U[Trader UI] --> API[API Gateway]
+  API --> AS[Application Server Cluster]
+  AS --> DB[(Database)]
+  AS --> MQ[(Event Bus)]
+  BATCH[Batch Engine] --> DB
+  BATCH --> MQ
+  MQ --> AS
+        </div>
+
+        <h2>Batch Processing Lifecycle</h2>
+        <div class="mermaid">
+flowchart TD
+  A[Inputs Ready] --> B[Pre-checks]
+  B --> C[Pricing Ingestion]
+  C --> D[Valuation]
+  D --> E[Historization]
+  E --> F[Publish Milestones]
+  F --> G[Runbook Hand-off]
+        </div>
+
+        <h2>Multi-Time Zone Data Flow</h2>
+        <div class="mermaid">
+flowchart LR
+  P[Portfolio] --> Z[Processing Zone]
+  Z --> CAL[Market Calendar]
+  CAL --> D[Zone Business Date]
+  D --> JOBS[Batch Jobs (per zone)]
+  JOBS --> SNAP[Published Snapshots]
+        </div>
+
+        <h2>Failover Processing Flow</h2>
+        <div class="mermaid">
+flowchart TD
+  Q[Event Queue] --> W[Worker]
+  W --> AUD[Audit Write: RECEIVED]
+  AUD --> TX[BEGIN TX]
+  TX --> APPLY[Apply Updates]
+  APPLY --> OK{Success?}
+  OK -->|Yes| COMMIT[COMMIT + Audit SUCCESS]
+  OK -->|No| ROLLBACK[ROLLBACK + Audit FAILED]
+  ROLLBACK --> RETRY[Requeue / Retry Policy]
+        </div>
+
+        <h2>Date Rollover (D → D+1)</h2>
+        <div class="mermaid">
+sequenceDiagram
+  autonumber
+  participant SCH as Scheduler
+  participant AS as App Server Cluster
+  participant DB as Database
+
+  SCH->>AS: Enter rollover mode
+  SCH->>DB: Advance business date (atomic)
+  SCH->>AS: Refresh date-sensitive caches
+  SCH->>AS: Exit rollover mode
+        </div>
+
+        <div class="note">
+          If you prefer Draw.io diagrams later, you can export SVGs into this folder and link them from the pages.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

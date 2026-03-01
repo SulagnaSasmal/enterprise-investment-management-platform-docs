@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Database & Configuration Updates</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <script defer src="assets/site.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>Enterprise Investment Management Platform</h1>
+            <div class="tagline">Database & configuration updates (abstracted)</div>
+          </div>
+          <div class="tagline">Schema direction, flags, and safe reloads</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="panel">
+        <h2>Summary</h2>
+        <p>
+          This section describes the <em>types</em> of database and configuration updates typically required to support
+          zone-based processing, high availability, and auditability. Exact schemas, internal paths, and proprietary
+          names are intentionally excluded.
+        </p>
+
+        <h2>Typical Data Model Changes</h2>
+        <ul>
+          <li><strong>Portfolio zone reference</strong>: associate a portfolio with a processing zone.</li>
+          <li><strong>Processing flags</strong>: enable/disable features per portfolio, per zone, or per environment.</li>
+          <li><strong>Composite audit keys</strong>: support unique tracking across (event_id, business_date, partition).</li>
+          <li><strong>Status enums</strong>: explicit state machine values for processing visibility.</li>
+        </ul>
+
+        <h2>Configuration Hot-Reload (Conceptual)</h2>
+        <p>
+          A 24x7 server model benefits from configuration changes that can be applied without full downtime.
+        </p>
+        <ul>
+          <li><strong>Versioned config</strong>: configuration is stored with a version/epoch; servers poll or subscribe.</li>
+          <li><strong>Scoped rollout</strong>: changes can be enabled for specific nodes or partitions first.</li>
+          <li><strong>Validation gates</strong>: reject invalid config with clear error reporting and rollback.</li>
+        </ul>
+
+        <h2>Cache Invalidation Triggers</h2>
+        <ul>
+          <li>Configuration version change events</li>
+          <li>Batch milestone events (pricing complete, valuation complete)</li>
+          <li>Date rollover events (zone business date advanced)</li>
+        </ul>
+
+        <div class="note">
+          Avoid including raw schemas in a portfolio unless you have explicit rights. Abstracting the intent and impact
+          is often more impressive than listing columns.
+        </div>
+      </div>
+
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>
