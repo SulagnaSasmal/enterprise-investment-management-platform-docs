@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Diagrams</title>
+    <title>Diagrams — SunGard Asset Arena Manager</title>
     <link rel="stylesheet" href="../assets/styles.css" />
     <script defer src="../assets/site.js"></script>
     <script type="module">
@@ -15,83 +15,82 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div>
-            <h1>Enterprise Investment Management Platform</h1>
-            <div class="tagline">Diagram library</div>
-          </div>
-          <div class="tagline">Mermaid diagrams used across docs</div>
+          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Diagram library</div></div>
+          <div class="tagline">Architecture and processing flow diagrams</div>
         </div>
         <div id="site-nav"></div>
       </div>
     </header>
-
     <main class="container">
       <div class="panel">
-        <h2>System Architecture</h2>
+        <h2>Asset Arena System Architecture</h2>
         <div class="mermaid">
 flowchart LR
-  U[Trader UI] --> API[API Gateway]
-  API --> AS[Application Server Cluster]
-  AS --> DB[(Database)]
-  AS --> MQ[(Event Bus)]
-  BATCH[Batch Engine] --> DB
+  UI[AAIM Client] --> WL[WebLogic Cluster]
+  FIX[FIX Gateway] --> WL
+  WL --> ORA[(Oracle 19c RAC)]
+  WL --> MQ[(IBM MQ Series)]
+  WL --> SWIFT[SWIFT Alliance]
+  WL --> BBG[Bloomberg B-PIPE]
+  BATCH[AA Scheduler] --> ORA
   BATCH --> MQ
-  MQ --> AS
+  MQ --> WL
         </div>
 
-        <h2>Batch Processing Lifecycle</h2>
+        <h2>NAV Calculation Batch Lifecycle</h2>
         <div class="mermaid">
 flowchart TD
-  A[Inputs Ready] --> B[Pre-checks]
-  B --> C[Pricing Ingestion]
-  C --> D[Valuation]
-  D --> E[Historization]
-  E --> F[Publish Milestones]
-  F --> G[Runbook Hand-off]
+  A[Pricing Sources Ready] --> B[Pre-checks: calendar + locks]
+  B --> C[Bloomberg BVAL Pricing Ingestion]
+  C --> D[Accruals Calculation]
+  D --> E[Portfolio Valuation]
+  E --> F[Fee Calculation]
+  F --> G[Official NAV Computation]
+  G --> H[Publish NAV to Transfer Agent]
+  H --> I[Historization to Data Warehouse]
         </div>
 
-        <h2>Multi-Time Zone Data Flow</h2>
+        <h2>Multi-Time Zone Fund Processing</h2>
         <div class="mermaid">
 flowchart LR
-  P[Portfolio] --> Z[Processing Zone]
-  Z --> CAL[Market Calendar]
-  CAL --> D[Zone Business Date]
-  D --> JOBS[Batch Jobs (per zone)]
-  JOBS --> SNAP[Published Snapshots]
+  FUND[Fund] --> ZONE[Processing Zone]
+  ZONE --> CAL[Market Calendar]
+  ZONE --> CUT[NAV Cut-Off Time]
+  CAL --> BIZ[Zone Business Date]
+  BIZ --> BATCH[NAV Batch per Zone]
+  BATCH --> NAV[Official NAV Published]
         </div>
 
-        <h2>Failover Processing Flow</h2>
+        <h2>JMS Event Failover Flow</h2>
         <div class="mermaid">
 flowchart TD
-  Q[Event Queue] --> W[Worker]
-  W --> AUD[Audit Write: RECEIVED]
-  AUD --> TX[BEGIN TX]
-  TX --> APPLY[Apply Updates]
+  MQ[IBM MQ] --> MDB[Message-Driven Bean]
+  MDB --> AUD[Audit: RECEIVED]
+  AUD --> TX[BEGIN JTA TX]
+  TX --> APPLY[Apply Business Updates]
   APPLY --> OK{Success?}
   OK -->|Yes| COMMIT[COMMIT + Audit SUCCESS]
   OK -->|No| ROLLBACK[ROLLBACK + Audit FAILED]
-  ROLLBACK --> RETRY[Requeue / Retry Policy]
+  ROLLBACK --> RETRY[Requeue with Backoff]
         </div>
 
-        <h2>Date Rollover (D → D+1)</h2>
+        <h2>Business Date Rollover (D &rarr; D+1)</h2>
         <div class="mermaid">
 sequenceDiagram
   autonumber
-  participant SCH as Scheduler
-  participant AS as App Server Cluster
-  participant DB as Database
+  participant SCH as Asset Arena Scheduler
+  participant WL as WebLogic Cluster
+  participant ORA as Oracle RAC
+  participant COH as Oracle Coherence
 
-  SCH->>AS: Enter rollover mode
-  SCH->>DB: Advance business date (atomic)
-  SCH->>AS: Refresh date-sensitive caches
-  SCH->>AS: Exit rollover mode
+  SCH->>WL: Enter rollover mode
+  SCH->>ORA: Advance business date (atomic)
+  SCH->>COH: Invalidate date-sensitive caches
+  SCH->>WL: Refresh and exit rollover mode
         </div>
 
-        <div class="note">
-          If you prefer Draw.io diagrams later, you can export SVGs into this folder and link them from the pages.
-        </div>
+        <div class="note">All diagrams use Mermaid.js for inline rendering. For higher-fidelity versions, export as SVG or use Draw.io equivalents.</div>
       </div>
-
       <div id="site-footer"></div>
     </main>
   </body>

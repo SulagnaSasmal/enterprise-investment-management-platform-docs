@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Multi-Time Zone Processing</title>
+    <title>Multi-Time Zone Processing — SunGard Asset Arena Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -15,71 +15,64 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div>
-            <h1>Enterprise Investment Management Platform</h1>
-            <div class="tagline">Multi-time zone processing</div>
-          </div>
-          <div class="tagline">Zone segmentation, calendars, and trade-date logic</div>
+          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Multi-time zone processing</div></div>
+          <div class="tagline">Global fund processing, NAV cut-offs, and calendar management</div>
         </div>
         <div id="site-nav"></div>
       </div>
     </header>
-
     <main class="container">
       <div class="panel">
         <h2>Problem Statement</h2>
-        <p>
-          Global investment operations must process portfolios across different market calendars and time zones.
-          “End of day” is not a single moment worldwide; batch operations must align to each portfolio’s zone.
-        </p>
-
+        <p>Global fund administrators manage funds domiciled across APAC, EMEA, and Americas jurisdictions. Each fund has different NAV cut-off times, market holidays, and settlement calendars. Asset Arena must process each fund according to its domicile rules while sharing a single platform instance.</p>
         <h2>Core Concepts</h2>
         <ul>
-          <li><strong>Processing zone</strong>: a named zone aligned to a market calendar (e.g., region or country grouping).</li>
-          <li><strong>Portfolio-to-zone association</strong>: each portfolio is assigned a zone that defines trading day boundaries.</li>
-          <li><strong>Zone-based batch segmentation</strong>: batch jobs execute per zone, with zone-specific valuation dates.</li>
-          <li><strong>Trade date validation</strong>: a trade’s effective date must match the portfolio’s zone calendar rules.</li>
+          <li><strong>Processing zone</strong>: a named zone aligned to a regulatory domicile (e.g., APAC-HK, EMEA-LUX, EMEA-IE, AMER-US).</li>
+          <li><strong>Fund-to-zone association</strong>: each fund/sub-fund is assigned a processing zone that defines NAV cut-off and business day boundaries.</li>
+          <li><strong>Zone-based batch segmentation</strong>: the Asset Arena Scheduler runs NAV batches per zone with zone-specific valuation dates and pricing sources.</li>
+          <li><strong>Transfer agent deadlines</strong>: subscription/redemption cut-off times are zone-specific and drive dealing calendar logic.</li>
         </ul>
-
         <div class="mermaid">
 flowchart LR
-  P[Portfolio] --> Z[Processing Zone]
-  Z --> CAL[Market Calendar]
-  CAL --> BIZ[Business Date (D)]
+  FUND[Fund / Sub-Fund] --> ZONE[Processing Zone]
+  ZONE --> CAL[Market Calendar - exchange holidays]
+  ZONE --> CUT[NAV Cut-Off Time]
+  CAL --> BIZ[Business Date D]
 
-  subgraph Batch
-    B1[Pricing Ingestion]
-    B2[Valuation]
-    B3[Historization]
+  subgraph AA_Batch[Asset Arena Batch]
+    PRICE[Pricing Ingestion]
+    VAL[NAV Calculation]
+    PUB[NAV Publication to TA]
   end
 
-  BIZ --> Batch
-  Batch --> OUT[Zone Outputs / Published Snapshots]
+  BIZ --> AA_Batch
+  AA_Batch --> OUT[Official NAV per zone]
         </div>
-
-        <h2>D+1 Trade Enablement (Conceptual)</h2>
-        <p>
-          In some operating models, a platform may accept “D+1” trades depending on market rules. The key is that
-          acceptance is deterministic and auditable per portfolio zone.
-        </p>
+        <h2>Zone Configuration</h2>
         <ul>
-          <li>Validate trade date against zone calendar (holidays, weekends, market closures).</li>
-          <li>Ensure downstream processing (allocation, confirmation, settlement) uses a consistent business date.</li>
-          <li>Record the rule decision and calendar version in audit trails.</li>
+          <li><strong>APAC-HK</strong>: Hong Kong / Singapore funds — NAV cut-off 16:00 HKT, HKEX + SGX calendars, Bloomberg BVAL APAC snap</li>
+          <li><strong>EMEA-LUX</strong>: Luxembourg UCITS funds — NAV cut-off 18:00 CET, Euronext + LSE calendars, BVAL EU snap</li>
+          <li><strong>EMEA-IE</strong>: Ireland-domiciled funds — NAV cut-off 17:00 GMT, ISE calendar, BVAL EU snap</li>
+          <li><strong>AMER-US</strong>: US registered funds — NAV cut-off 16:00 ET, NYSE + NASDAQ calendars, BVAL US snap</li>
+          <li><strong>AMER-CAY</strong>: Cayman hedge funds — NAV cut-off flexible (monthly), composite calendar</li>
         </ul>
-
-        <h2>Database Impact (Abstracted)</h2>
-        <p>
-          Typical data changes include adding a zone reference to portfolios and storing processing boundaries in
-          configuration. Exact schemas are intentionally not provided.
-        </p>
-
-        <div class="note">
-          The differentiator here is not “knowing time zones”; it’s documenting how time zones, calendars, and batch
-          windows intersect with the trading lifecycle.
-        </div>
+        <h2>D+1 Trade Acceptance</h2>
+        <p>Asset Arena supports forward-dated order entry where a fund's zone has already rolled to D+1 but other zones remain on D. The platform validates:</p>
+        <ul>
+          <li>Trade date against the fund's zone calendar (holidays, weekends, market closures).</li>
+          <li>Settlement date projection using the correct T+n convention for the instrument's settlement market.</li>
+          <li>Downstream consistency: allocation, confirmation, and settlement instruction generation all reference the same business date.</li>
+        </ul>
+        <h2>Database Configuration</h2>
+        <p>Zone configuration is stored in Asset Arena's Oracle schema with the following reference data:</p>
+        <ul>
+          <li>Zone master table: zone code, description, base timezone, NAV cut-off time</li>
+          <li>Fund-zone mapping: fund ID &rarr; zone code (many-to-one)</li>
+          <li>Calendar sets: zone code &rarr; market calendar IDs (composite calendar support)</li>
+          <li>Pricing source rules: zone code &rarr; pricing vendor + snap time</li>
+        </ul>
+        <div class="note">The key differentiator is not "knowing time zones" — it's how Asset Arena coordinates zones, calendars, pricing sources, and batch windows into a deterministic, auditable NAV production pipeline.</div>
       </div>
-
       <div id="site-footer"></div>
     </main>
   </body>

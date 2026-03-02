@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>System Architecture</title>
+    <title>System Architecture — SunGard Asset Arena Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -16,10 +16,10 @@
       <div class="container">
         <div class="brand">
           <div>
-            <h1>Enterprise Investment Management Platform</h1>
-            <div class="tagline">System architecture (components and flows)</div>
+            <h1>SunGard Asset Arena Manager</h1>
+            <div class="tagline">System architecture — components and integration flows</div>
           </div>
-          <div class="tagline">Abstracted reference architecture</div>
+          <div class="tagline">J2EE / Oracle / SWIFT / Bloomberg</div>
         </div>
         <div id="site-nav"></div>
       </div>
@@ -27,74 +27,89 @@
 
     <main class="container">
       <div class="panel">
-        <h2>Component Model</h2>
+        <h2>Component Architecture</h2>
         <p>
-          This platform is modeled as a set of services and engines: interactive order entry, an application server
-          hosting business logic, a batch engine, and shared platform services (cache, notifications, audit).
+          Asset Arena Manager is deployed as a multi-tier J2EE application. The platform consists of a WebLogic
+          application server cluster, an Oracle RAC database tier, IBM MQ Series messaging, and external integrations
+          for market data, settlement, and order routing.
         </p>
 
         <div class="mermaid">
 flowchart LR
-  U[Trader UI / Ops UI] -->|HTTPS/API| API[API Gateway]
-  API --> AS[Application Server Cluster]
+  UI[AAIM Client / Web UI] -->|HTTPS| WL[WebLogic Cluster]
+  FIX[FIX Gateway] -->|FIX 4.4| WL
 
-  subgraph AS[Application Server Cluster]
-    BL[Business Logic Layer]
-    CACH[Cache Layer]
-    EVT[Event Dispatcher]
+  subgraph WL[WebLogic Application Server Cluster]
+    EJB[Business Logic EJBs]
+    COH[Oracle Coherence Cache]
+    JMS[JMS Event Dispatcher]
   end
 
-  AS --> DB[(Relational Database)]
-  AS --> MQ[(Event Bus / Queue)]
-  AS --> NOTIF[Notification Service]
+  WL --> ORA[(Oracle 19c RAC)]
+  WL --> MQ[(IBM MQ Series)]
+  WL --> SW[SWIFT Alliance Lite2]
+  WL --> BBG[Bloomberg B-PIPE]
 
-  BATCH[Batch Engine] --> DB
+  BATCH[Asset Arena Scheduler] --> ORA
   BATCH --> MQ
-  MQ --> AS
-  MQ --> DW[(Analytics / Warehouse - optional)]
+  MQ --> WL
+  MQ --> RECON[Reconciliation Engine]
 
-  OPS[Monitoring & Alerting] -.metrics/logs.-> AS
-  OPS -.metrics/logs.-> BATCH
+  MON[Splunk / AppDynamics] -.metrics.-> WL
+  MON -.metrics.-> BATCH
         </div>
 
-        <h2>Request Flow (Online)</h2>
+        <h2>Online Order Flow</h2>
         <ul>
-          <li>UI/API call reaches the application server through an API gateway.</li>
-          <li>Business logic validates inputs (e.g., eligibility, limits, compliance checks).</li>
-          <li>State transitions are written to the database; events are published for downstream processing.</li>
-          <li>Cache invalidations/reloads occur based on change events and controlled reload rules.</li>
+          <li>Portfolio manager enters an order via the AAIM thick client or web interface.</li>
+          <li>Order reaches the WebLogic cluster through HTTPS with session affinity.</li>
+          <li>Pre-trade compliance evaluates the order against investment mandates and fund prospectus rules.</li>
+          <li>Approved orders are persisted to Oracle and published to MQ for downstream processing.</li>
+          <li>FIX Gateway routes the order to the broker execution venue.</li>
+          <li>Execution confirmations flow back via FIX, triggering allocation and settlement workflows.</li>
         </ul>
 
-        <h2>Order State Transitions (Conceptual)</h2>
+        <h2>Order State Transitions</h2>
         <div class="mermaid">
 stateDiagram-v2
   [*] --> New
-  New --> Validated
-  Validated --> Routed
+  New --> ComplianceCheck
+  ComplianceCheck --> Approved
+  ComplianceCheck --> Rejected
+  Approved --> Routed
   Routed --> Executed
   Executed --> Allocated
-  Allocated --> Settled
+  Allocated --> SettlementPending
+  SettlementPending --> Settled
 
-  Validated --> Rejected
   Routed --> Canceled
-  Executed --> Corrected
-  Settled --> Corrected
-
-  Corrected --> Allocated
+  Executed --> Amended
+  Amended --> Allocated
   Rejected --> [*]
   Canceled --> [*]
         </div>
 
-        <h2>Cache Reload Mechanisms</h2>
+        <h2>Technology Stack</h2>
         <ul>
-          <li><strong>Event-triggered</strong>: reload specific cache regions when relevant entities change.</li>
-          <li><strong>Batch-triggered</strong>: after batch milestones (pricing completed, valuation computed), refresh dependent caches.</li>
-          <li><strong>Rollover-triggered</strong>: at controlled date rollover, move D → D+1 and re-evaluate date-sensitive cache entries.</li>
+          <li><strong>Application server</strong>: Oracle WebLogic 14c (J2EE 8) with Oracle Coherence distributed caching</li>
+          <li><strong>Database</strong>: Oracle 19c RAC with Data Guard for DR</li>
+          <li><strong>Messaging</strong>: IBM MQ Series 9.x for inter-module event processing</li>
+          <li><strong>Market data</strong>: Bloomberg B-PIPE (real-time), BVAL (EOD), Refinitiv Datascope</li>
+          <li><strong>Settlement</strong>: SWIFT Alliance Lite2 for MT5xx; CLS and T2S for EU settlement</li>
+          <li><strong>Order routing</strong>: FIX 4.2/4.4 via FIX gateway</li>
+          <li><strong>Monitoring</strong>: Splunk, AppDynamics, Grafana/Prometheus</li>
+        </ul>
+
+        <h2>Cache Architecture (Oracle Coherence)</h2>
+        <ul>
+          <li><strong>Event-triggered</strong>: instrument master, counterparty, SSI caches refresh on JMS change events.</li>
+          <li><strong>Batch-triggered</strong>: position and valuation caches refresh after pricing or NAV milestones.</li>
+          <li><strong>Rollover-triggered</strong>: date-sensitive caches invalidate on D &rarr; D+1 business date advance.</li>
         </ul>
 
         <div class="note">
-          Diagrams are intentionally simplified. The goal is to communicate system responsibilities and flows — not to
-          replicate a proprietary implementation.
+          WebLogic cluster nodes use Coherence multicast for cache synchronization. In DR configurations,
+          Coherence federation replicates critical partitions to the standby data center.
         </div>
       </div>
 

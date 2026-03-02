@@ -1,56 +1,39 @@
-# Enterprise Investment Management Platform — Architecture & Release Documentation (Sample)
+# SunGard Asset Arena Manager — Platform Documentation
 
-This repository is a **portfolio artifact** demonstrating architecture-level documentation for an enterprise investment management platform.
+Enterprise HTML documentation for the SunGard Asset Arena Manager (FIS Asset Arena) investment management platform — covering system architecture, batch processing (NAV calculation), high availability, multi-time zone fund processing, failover design, and release governance.
 
-It focuses on:
-- Enterprise system decomposition and request/event flows
-- High availability / 24x7 application server operations
-- Batch processing orchestration (dependencies, idempotency, partitioning)
-- Multi-time zone + market calendar alignment
-- Failover + per-event transactional processing and audit design
-- Release impact governance (ops readiness, risk, compatibility)
+## Overview
 
-## Audience
-- Architects / platform engineers
-- Release managers / change governance
-- Operations / SRE
+Asset Arena Manager is an enterprise investment management platform by SunGard (now FIS) used by asset managers, hedge funds, insurance companies, pension funds, and fund administrators globally. This documentation covers platform architecture, operational procedures, and release impact governance.
 
-## What This Is / Isn’t
-- **Is**: conceptual system + architecture + release documentation.
-- **Isn’t**: end-user help, UI screenshots, or product training.
+Static HTML site hosted via GitHub Pages. No build tools or backend required.
 
-## Safety / Abstraction Policy
-To keep this portfolio safe and credible, the content is intentionally abstracted:
-- No proprietary code, internal hostnames/IPs, internal file paths, customer identifiers, or real database table names
-- Examples are illustrative and **non-proprietary**
+## Pages
 
-## View the Site (GitHub Pages)
-If GitHub Pages is enabled for this repo, open:
-- `https://<your-username>.github.io/enterprise-investment-management-platform-docs/`
+| Page | Topic |
+|------|-------|
+| `index.html` | Platform documentation overview |
+| `platform-overview.html` | Asset Arena modules — AAIM, Settlement Manager, Fund Administrator |
+| `system-architecture.html` | J2EE architecture — WebLogic, Oracle RAC, MQ, SWIFT, Bloomberg |
+| `high-availability-enhancement.html` | HA design — clustering, Oracle RAC, DR, rolling restarts |
+| `batch-processing-framework.html` | NAV calculation batch orchestration and scheduling |
+| `multi-time-zone-processing.html` | Global fund processing zones, calendars, NAV cut-offs |
+| `failover-and-audit-design.html` | JMS failover, JTA transactions, Oracle audit trail |
+| `database-and-configuration-updates.html` | Oracle schema management, Liquibase, reference data |
+| `release-impact-summary.html` | Release governance — CAB, ops readiness, risk assessment |
+| `diagrams/index.html` | Mermaid diagram library |
 
-## Local Viewing
-No build step required.
-- Open `index.html` directly in a browser, or
-- Use a simple static server (optional):
+## Technology
 
-```bash
-# Python (if installed)
-python -m http.server 8080
-```
+- HTML (~94%)
+- CSS (~4%)
+- JavaScript (~2% — navigation and Mermaid diagrams)
+- No frameworks, no build pipeline
 
-Then visit `http://localhost:8080/`.
+## Usage
 
-## Document Map
-- `index.html` — Executive overview / navigation
-- `platform-overview.html` — Domain overview
-- `system-architecture.html` — Components, flows, and state transitions
-- `high-availability-enhancement.html` — 24x7 model + date rollover
-- `batch-processing-framework.html` — Job graph + idempotency patterns
-- `multi-time-zone-processing.html` — Zone segmentation + calendar logic
-- `failover-and-audit-design.html` — Per-event isolation + audit model
-- `database-and-configuration-updates.html` — Abstracted schema/config changes
-- `release-impact-summary.html` — Operational and governance framing
-- `diagrams/index.html` — Mermaid diagram library
+Open `index.html` in any browser, or deploy to GitHub Pages for hosted access.
 
-## Sources
-This portfolio uses **public references only** (links can be added here as needed). No proprietary documents are included.
+---
+
+*SunGard Asset Arena Manager (FIS) — Internal Use Only*

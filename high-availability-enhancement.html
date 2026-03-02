@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>High Availability Enhancement</title>
+    <title>High Availability — SunGard Asset Arena Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -15,80 +15,70 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div>
-            <h1>Enterprise Investment Management Platform</h1>
-            <div class="tagline">High availability & 24x7 server model</div>
-          </div>
-          <div class="tagline">Zero-downtime focus for batch windows</div>
+          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">High availability &amp; 24&times;7 server model</div></div>
+          <div class="tagline">WebLogic clustering, Oracle RAC, and DR design</div>
         </div>
         <div id="site-nav"></div>
       </div>
     </header>
-
     <main class="container">
       <div class="panel">
         <h2>Objective</h2>
-        <p>
-          Enable a <strong>24x7 application server</strong> that remains available during batch processing windows, while
-          preserving correctness for date-sensitive operations (trade date, valuation date) and cache coherence.
-        </p>
-
+        <p>Enable a <strong>24&times;7 Asset Arena application server</strong> that remains available during NAV calculation and fund accounting batch windows, while preserving correctness for date-sensitive operations and Oracle Coherence cache coherence.</p>
         <h2>Architecture Summary</h2>
         <ul>
-          <li><strong>Active/active cluster</strong> of application servers behind an API gateway/load balancer</li>
-          <li><strong>Controlled process restart strategy</strong> (rolling restart) to apply configuration changes safely</li>
-          <li><strong>Cache invalidation rules</strong> aligned to events, batch milestones, and date rollover</li>
-          <li><strong>Global synchronization primitives</strong> to ensure consistent “business date” across nodes</li>
+          <li><strong>Active/active WebLogic cluster</strong> behind F5 load balancer with session affinity</li>
+          <li><strong>Oracle RAC</strong> (2+ nodes) for database-level redundancy with automatic instance failover</li>
+          <li><strong>Oracle Data Guard</strong> physical standby at DR site with real-time redo log shipping</li>
+          <li><strong>Rolling restart strategy</strong> for WebLogic nodes to apply patches without full outage</li>
+          <li><strong>Coherence cache federation</strong> for cross-data-center cache replication</li>
         </ul>
-
-        <h2>Date Rollover (D → D+1)</h2>
-        <p>
-          Date rollover is treated as a coordinated lifecycle event, not a simple clock tick. Rollover may be triggered
-          by a scheduler based on zone calendars, with safeguards to prevent partial transitions.
-        </p>
-
+        <h2>Business Date Rollover (D &rarr; D+1)</h2>
+        <p>Date rollover in Asset Arena is a coordinated lifecycle event triggered by the Asset Arena Scheduler based on fund domicile zone calendars. All WebLogic nodes must advance atomically.</p>
         <div class="mermaid">
 sequenceDiagram
   autonumber
-  participant SCH as Scheduler
-  participant AS1 as App Server A
-  participant AS2 as App Server B
-  participant DB as Database
-  participant C as Cache
+  participant SCH as Asset Arena Scheduler
+  participant WL1 as WebLogic Node A
+  participant WL2 as WebLogic Node B
+  participant ORA as Oracle RAC
+  participant COH as Oracle Coherence
 
-  SCH->>DB: Mark rollover window start (D)
-  SCH->>AS1: Enter rollover mode
-  SCH->>AS2: Enter rollover mode
-  AS1->>C: Freeze date-sensitive regions
-  AS2->>C: Freeze date-sensitive regions
-  SCH->>DB: Advance business date to D+1 (atomic update)
-  AS1->>C: Refresh D+1 dependent caches
-  AS2->>C: Refresh D+1 dependent caches
-  SCH->>AS1: Exit rollover mode
-  SCH->>AS2: Exit rollover mode
+  SCH->>ORA: Mark rollover window start (fund zone D)
+  SCH->>WL1: Enter rollover mode
+  SCH->>WL2: Enter rollover mode
+  WL1->>COH: Freeze date-sensitive cache regions
+  WL2->>COH: Freeze date-sensitive cache regions
+  SCH->>ORA: Advance business date to D+1 (atomic update)
+  WL1->>COH: Refresh D+1 caches (calendars, settlement dates)
+  WL2->>COH: Refresh D+1 caches
+  SCH->>WL1: Exit rollover mode
+  SCH->>WL2: Exit rollover mode
         </div>
-
-        <h2>Order Eligibility Cleanup</h2>
+        <h2>Order Eligibility Cleanup at Rollover</h2>
         <ul>
-          <li>Re-evaluate orders with date constraints (valid-from/valid-until, market calendar rules).</li>
-          <li>Expire or re-queue workflows that cannot proceed on D+1.</li>
-          <li>Write auditable lifecycle updates (who/what/when) for operational traceability.</li>
+          <li>Re-evaluate pending orders with date constraints (valid-from/valid-until, market calendar rules).</li>
+          <li>Expire GTC/GTD orders that fall outside D+1 calendar boundaries.</li>
+          <li>Regenerate settlement date projections using D+1 market calendars (T+1, T+2 rules).</li>
+          <li>Write auditable lifecycle updates for every order state change triggered by rollover.</li>
         </ul>
-
-        <h2>Controlled Restarts</h2>
-        <p>
-          Zero downtime does not mean “never restart”. It means restarts are controlled and do not break inflight work.
-        </p>
+        <h2>WebLogic Rolling Restart Procedure</h2>
         <ul>
-          <li>Drain node → stop accepting new sessions → complete inflight work → restart → rejoin.</li>
-          <li>Use health checks and version compatibility to avoid mixed-mode failures.</li>
+          <li>Drain node via F5 health check disable &rarr; complete all inflight EJB transactions &rarr; graceful shutdown.</li>
+          <li>Apply patch or configuration change to the stopped node.</li>
+          <li>Restart node, verify Coherence cache re-join and Oracle connection pool health.</li>
+          <li>Re-enable in F5 load balancer after health check passes (AAIM heartbeat endpoint).</li>
+          <li>Repeat for each remaining node in the cluster.</li>
         </ul>
-
-        <div class="note">
-          This section is framed as a platform enhancement: resilience, uptime, and predictable operations.
-        </div>
+        <h2>Disaster Recovery</h2>
+        <ul>
+          <li><strong>RPO target</strong>: &lt;15 minutes (Oracle Data Guard synchronous redo shipping)</li>
+          <li><strong>RTO target</strong>: &lt;4 hours (automated failover for Oracle; manual WebLogic bring-up at DR)</li>
+          <li><strong>DR testing</strong>: quarterly DR failover exercises with NAV calculation validation</li>
+          <li><strong>Cache warm-up</strong>: Coherence near-cache pre-load scripts run during DR activation</li>
+        </ul>
+        <div class="note">Quarterly DR tests include end-to-end NAV calculation for a sample fund set to validate data integrity across Oracle Data Guard switchover and Coherence cache re-synchronization.</div>
       </div>
-
       <div id="site-footer"></div>
     </main>
   </body>

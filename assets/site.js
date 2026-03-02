@@ -13,7 +13,6 @@
   ];
 
   function normalizePath(pathname) {
-    // GitHub Pages can serve from /repo/..., so we only compare trailing segments.
     return (pathname || '').replace(/\\/g, '/');
   }
 
@@ -23,8 +22,6 @@
   }
 
   function toLinkHref(currentPath, pageHref) {
-    // When we are inside /diagrams/, root-relative links are not available (static hosting).
-    // Use a prefix to navigate back to the site root.
     if (!inDiagramsFolder(currentPath)) return pageHref;
     if (pageHref.startsWith('diagrams/')) return 'index.html';
     return '../' + pageHref;
@@ -60,8 +57,8 @@
     const year = new Date().getFullYear();
     host.innerHTML = `
       <div class="footer">
-        <div>© ${year} • Enterprise Investment Management Platform — Architecture & Release Documentation (sample)</div>
-        <div class="small">This repository is a portfolio artifact: conceptual, abstracted, and non-proprietary.</div>
+        <div>&copy; ${year} &bull; SunGard Asset Arena Manager (FIS) &mdash; Platform Architecture &amp; Operations Documentation</div>
+        <div class="small">Internal reference documentation. Not for external distribution.</div>
       </div>
     `;
   }

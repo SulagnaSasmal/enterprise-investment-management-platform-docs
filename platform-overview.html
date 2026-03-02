@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Platform Overview</title>
+    <title>Platform Overview — SunGard Asset Arena Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
   </head>
@@ -11,67 +11,79 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div>
-            <h1>Enterprise Investment Management Platform</h1>
-            <div class="tagline">Platform overview (conceptual)</div>
-          </div>
-          <div class="tagline">Architecture & release documentation sample</div>
+          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Platform overview — modules and capabilities</div></div>
+          <div class="tagline">Architecture &amp; operations documentation</div>
         </div>
         <div id="site-nav"></div>
       </div>
     </header>
-
     <main class="container">
       <div class="panel">
-        <h2>What is an Investment Management Platform?</h2>
-        <p>
-          An investment management platform coordinates the full lifecycle of institutional trading and portfolio
-          operations: order creation, execution workflows, allocations, post-trade processing, valuation, and reporting.
-          It must be auditable, resilient, and able to process large volumes under strict market deadlines.
-        </p>
-
-        <h2>Core Domains</h2>
+        <h2>About Asset Arena Manager</h2>
+        <p>SunGard Asset Arena Manager (now part of FIS) is an enterprise investment management platform supporting the complete trade lifecycle, portfolio management, fund accounting, and regulatory reporting. Deployed on-premise or managed hosting, it serves asset managers, hedge funds, insurance companies, pension funds, and fund administrators across 30+ countries.</p>
+        <h2>Core Modules</h2>
         <div class="grid cols-2">
           <div class="panel">
-            <h3>Portfolio management</h3>
+            <h3>Asset Arena Investment Manager (AAIM)</h3>
             <ul>
-              <li>Portfolio hierarchy (accounts, strategies, sleeves)</li>
-              <li>Positions and holdings reconciliation</li>
-              <li>Cash and corporate actions impacts</li>
-              <li>Valuation and performance calculations</li>
+              <li>Portfolio hierarchy (funds, sub-funds, strategies, sleeves)</li>
+              <li>Order management with pre-trade compliance</li>
+              <li>FIX 4.2/4.4 order routing to broker venues</li>
+              <li>Block/allocation workflows with pro-rata models</li>
+              <li>Position keeping with real-time P&amp;L</li>
+              <li>Corporate actions processing</li>
+              <li>Performance attribution (Brinson-Fachler, GIPS)</li>
             </ul>
           </div>
           <div class="panel">
-            <h3>Order lifecycle</h3>
+            <h3>Asset Arena Settlement Manager</h3>
             <ul>
-              <li>Order capture and validation (limits, compliance, eligibility)</li>
-              <li>State transitions: new → routed → executed → allocated → settled</li>
-              <li>Event stream for post-trade workflows</li>
-              <li>Amend/cancel and correction handling</li>
+              <li>SWIFT MT5xx settlement instruction generation</li>
+              <li>Custodian reconciliation (position, cash, transaction)</li>
+              <li>Failed trade management and aging dashboards</li>
+              <li>SSI master and counterparty routing</li>
+              <li>CLS and T2S settlement connectivity</li>
             </ul>
           </div>
         </div>
-
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>Asset Arena Fund Administrator</h3>
+            <ul>
+              <li>NAV calculation (official, shadow, indicative)</li>
+              <li>Multi-GAAP fund accounting (IFRS, US GAAP)</li>
+              <li>Investor servicing: subscriptions, redemptions, transfers</li>
+              <li>Fee calculation: management, performance (HWM, hurdle)</li>
+              <li>Regulatory reporting: UCITS, AIFMD, Form PF</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Cross-Module Services</h3>
+            <ul>
+              <li>Instrument master: equities, FI, derivatives, FX, alternatives</li>
+              <li>Market data: Bloomberg B-PIPE, BVAL, Refinitiv, ICE</li>
+              <li>Compliance: pre-trade, post-trade, mandate rules</li>
+              <li>Reporting: Crystal Reports, SSRS, Excel-based</li>
+              <li>Audit trail: full change history across all entities</li>
+            </ul>
+          </div>
+        </div>
         <h2>Processing Models</h2>
         <ul>
-          <li><strong>Online / request-driven</strong>: user actions and API calls for interactive workflows</li>
-          <li><strong>Event-driven</strong>: asynchronous processing for trade events, allocations, and downstream updates</li>
-          <li><strong>Batch-based</strong>: valuation, pricing, historization, and EOD/EOM aggregates</li>
+          <li><strong>Online</strong>: interactive order entry, portfolio inquiries via AAIM thick client or web UI</li>
+          <li><strong>Event-driven</strong>: JMS-based async processing for trade events, corporate actions, downstream updates</li>
+          <li><strong>Batch</strong>: NAV calculation, EOD pricing, fund accounting close, historization, regulatory reports</li>
         </ul>
-
         <h2>Operational Requirements</h2>
         <ul>
-          <li>24x7 uptime with controlled date rollover (D → D+1)</li>
-          <li>Multi-market calendars and multi-time zone processing</li>
-          <li>Deterministic reruns (idempotency) and traceability (audit)</li>
-          <li>High availability and failover controls to protect data integrity</li>
+          <li>24&times;7 uptime with controlled business date rollover</li>
+          <li>Multi-market calendar support (60+ exchanges, 40+ clearing houses)</li>
+          <li>Idempotent batch reruns and full audit traceability</li>
+          <li>WebLogic clustering and Oracle RAC for high availability</li>
+          <li>DR with RPO &lt;15 min, RTO &lt;4 hours for critical functions</li>
         </ul>
-
-        <div class="note">
-          This documentation intentionally avoids UI help and focuses on platform architecture and release governance.
-        </div>
+        <div class="note">This documentation focuses on platform architecture and operations. For end-user guides, refer to the FIS Asset Arena User Guide.</div>
       </div>
-
       <div id="site-footer"></div>
     </main>
   </body>

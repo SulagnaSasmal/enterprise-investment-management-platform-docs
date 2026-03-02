@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Batch Processing Framework</title>
+    <title>Batch Processing — SunGard Asset Arena Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -16,8 +16,8 @@
       <div class="container">
         <div class="brand">
           <div>
-            <h1>Enterprise Investment Management Platform</h1>
-            <div class="tagline">Batch processing framework</div>
+            <h1>SunGard Asset Arena Manager</h1>
+            <div class="tagline">Batch processing framework — NAV &amp; fund accounting</div>
           </div>
           <div class="tagline">Orchestration, dependencies, and idempotency</div>
         </div>
@@ -29,60 +29,68 @@
       <div class="panel">
         <h2>Batch Families</h2>
         <ul>
-          <li><strong>Daily</strong>: pricing ingestion, valuation, reconciliations, audit rollups</li>
-          <li><strong>Weekly/Periodic</strong>: maintenance, recomputation, archival/historization</li>
-          <li><strong>Pricing</strong>: market data alignment, late price corrections, snapshot publication</li>
-          <li><strong>Event-driven catch-up</strong>: reprocess subsets after upstream corrections</li>
+          <li><strong>NAV Calculation</strong>: pricing ingestion, portfolio valuation, accruals, fee computation, official NAV publication</li>
+          <li><strong>Fund Accounting EOD</strong>: journal posting, trial balance, P&amp;L crystallization, multi-GAAP adjustments</li>
+          <li><strong>Reconciliation</strong>: custodian position matching, cash reconciliation, transaction-level breaks</li>
+          <li><strong>Corporate Actions</strong>: ex-date processing, entitlement calculation, election processing, cash/stock distribution</li>
+          <li><strong>Pricing</strong>: Bloomberg BVAL ingestion, Reuters EOD snap, late price corrections, fair value adjustments</li>
+          <li><strong>Reporting</strong>: client reporting packs, regulatory report generation (UCITS, AIFMD Annex IV), data warehouse load</li>
         </ul>
 
-        <h2>Orchestration Model</h2>
+        <h2>NAV Calculation Orchestration</h2>
         <p>
-          The batch engine executes parameterized jobs in a dependency graph, with safeguards that support reruns
-          without creating inconsistent outcomes.
+          The Asset Arena Scheduler executes NAV calculation as a dependency graph of parameterized jobs.
+          Each step has pre-conditions, produces auditable outputs, and supports idempotent reruns.
         </p>
 
         <div class="mermaid">
 flowchart TD
-  START([Start Batch Window]) --> PRE[Pre-checks: calendars, inputs, locks]
-  PRE --> ING[Ingest pricing / reference data]
-  ING --> VAL[Valuation & position updates]
-  VAL --> HIST[Historization / snapshots]
-  HIST --> PUB[Publish milestones / notifications]
-  PUB --> END([End Batch Window])
+  START([NAV Batch Window Open]) --> PRE[Pre-checks: calendar, pricing sources, locks]
+  PRE --> PRICE[Ingest EOD Prices - Bloomberg BVAL / Refinitiv]
+  PRICE --> ACCRUE[Calculate Accruals - fixed income, dividends]
+  ACCRUE --> VAL[Portfolio Valuation - mark-to-market]
+  VAL --> FEE[Fee Calculation - mgmt fees, perf fees, admin fees]
+  FEE --> NAV[Compute Official NAV per share]
+  NAV --> PUB[Publish NAV to Transfer Agent / Fund Admin]
+  PUB --> HIST[Historization - snapshot to data warehouse]
+  HIST --> END([NAV Batch Window Close])
 
-  PRE -->|failure| ABORT[Abort + alert]
-  ING -->|late prices| ING
-  VAL -->|retry safe| VAL
+  PRE -->|missing prices| ABORT[Alert: pricing incomplete]
+  PRICE -->|late corrections| PRICE
+  VAL -->|rerun safe| VAL
         </div>
 
         <h2>Key Design Requirements</h2>
         <ul>
-          <li><strong>Dependency sequencing</strong>: enforce prerequisites (inputs, prior jobs, zone readiness).</li>
-          <li><strong>Idempotency</strong>: rerunning a job produces the same end state for the same inputs.</li>
-          <li><strong>Partitioning</strong>: batch workloads can be segmented (e.g., by portfolio group, by time zone).</li>
-          <li><strong>Observability</strong>: every batch step emits metrics and audit records for traceability.</li>
+          <li><strong>Dependency sequencing</strong>: pricing must complete before valuation; valuation before fee calculation; fees before NAV.</li>
+          <li><strong>Idempotency</strong>: rerunning NAV calculation for the same fund/date produces identical results given same inputs.</li>
+          <li><strong>Partitioning</strong>: batches segment by fund domicile zone (APAC, EMEA, Americas) for parallel processing.</li>
+          <li><strong>Observability</strong>: every batch step emits duration, row counts, and completion status to Splunk.</li>
+          <li><strong>Late price handling</strong>: configurable wait windows per pricing source; fallback to prior-day price with flagging.</li>
         </ul>
 
-        <h2>Generic Command Structure (Example)</h2>
-        <pre><code># illustrative CLI pattern (non-proprietary)
-# run a batch family for a zone with an explicit valuation date
-batchctl run \
-  --family daily \
-  --zone APAC \
+        <h2>Asset Arena Scheduler CLI</h2>
+        <pre><code># Run NAV batch for EMEA funds with explicit valuation date
+aa-scheduler run \
+  --batch-family nav-calculation \
+  --zone EMEA \
   --valuation-date 2026-03-01 \
-  --max-parallel 8 \
-  --retry-policy per_event \
+  --max-parallel 12 \
+  --retry-policy per_fund \
+  --pricing-source BVAL,REFINITIV \
   --dry-run false
 </code></pre>
 
         <h2>Zone-Based Execution</h2>
         <p>
-          A common approach is to run the same job graph multiple times per “country zone” (or processing zone), each
-          with its own calendar and trading day boundaries.
+          Asset Arena runs the same NAV batch graph multiple times — once per processing zone. Each zone has its
+          own market calendar, NAV cut-off time, and pricing source configuration. APAC funds process first,
+          followed by EMEA, then Americas.
         </p>
 
         <div class="note">
-          This section pairs with <a href="multi-time-zone-processing.html">Multi-Time Zone Processing</a>.
+          Zone-based batch execution pairs with <a href="multi-time-zone-processing.html">Multi-Time Zone Processing</a>
+          for detailed calendar and cut-off time configuration.
         </div>
       </div>
 

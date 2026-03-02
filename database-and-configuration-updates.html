@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Database & Configuration Updates</title>
+    <title>Database & Configuration — SunGard Asset Arena Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
   </head>
@@ -11,56 +11,52 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div>
-            <h1>Enterprise Investment Management Platform</h1>
-            <div class="tagline">Database & configuration updates (abstracted)</div>
-          </div>
-          <div class="tagline">Schema direction, flags, and safe reloads</div>
+          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Database &amp; configuration management</div></div>
+          <div class="tagline">Oracle schema versioning, reference data, and cache management</div>
         </div>
         <div id="site-nav"></div>
       </div>
     </header>
-
     <main class="container">
       <div class="panel">
         <h2>Summary</h2>
-        <p>
-          This section describes the <em>types</em> of database and configuration updates typically required to support
-          zone-based processing, high availability, and auditability. Exact schemas, internal paths, and proprietary
-          names are intentionally excluded.
-        </p>
-
-        <h2>Typical Data Model Changes</h2>
+        <p>This section describes the database schema management, reference data configuration, and cache lifecycle patterns used by Asset Arena Manager. The platform runs on Oracle 19c RAC with schema versioning managed through Liquibase changesets applied during release deployments.</p>
+        <h2>Core Data Model Areas</h2>
         <ul>
-          <li><strong>Portfolio zone reference</strong>: associate a portfolio with a processing zone.</li>
-          <li><strong>Processing flags</strong>: enable/disable features per portfolio, per zone, or per environment.</li>
-          <li><strong>Composite audit keys</strong>: support unique tracking across (event_id, business_date, partition).</li>
-          <li><strong>Status enums</strong>: explicit state machine values for processing visibility.</li>
+          <li><strong>Fund &amp; portfolio structure</strong>: fund master, sub-fund hierarchy, strategy/sleeve decomposition, benchmark associations</li>
+          <li><strong>Instrument master</strong>: security reference data, pricing identifiers (ISIN, SEDOL, Bloomberg ticker), corporate action entitlements</li>
+          <li><strong>Counterparty &amp; SSI data</strong>: broker records, custodian accounts, standard settlement instructions per instrument type</li>
+          <li><strong>Processing zone configuration</strong>: zone master, fund-zone mapping, market calendars, NAV cut-off schedules</li>
+          <li><strong>Audit tables</strong>: event processing audit, compliance decision log, user action history</li>
         </ul>
-
-        <h2>Configuration Hot-Reload (Conceptual)</h2>
-        <p>
-          A 24x7 server model benefits from configuration changes that can be applied without full downtime.
-        </p>
+        <h2>Schema Versioning (Liquibase)</h2>
         <ul>
-          <li><strong>Versioned config</strong>: configuration is stored with a version/epoch; servers poll or subscribe.</li>
-          <li><strong>Scoped rollout</strong>: changes can be enabled for specific nodes or partitions first.</li>
-          <li><strong>Validation gates</strong>: reject invalid config with clear error reporting and rollback.</li>
+          <li>All DDL changes managed via Liquibase XML changesets checked into version control.</li>
+          <li>Changesets follow expand-migrate-contract pattern for zero-downtime compatibility.</li>
+          <li>Pre-deployment validation: Liquibase dry-run in UAT before production execution.</li>
+          <li>Rollback scripts maintained for every changeset; tested as part of release qualification.</li>
         </ul>
-
-        <h2>Cache Invalidation Triggers</h2>
+        <h2>Reference Data Management</h2>
         <ul>
-          <li>Configuration version change events</li>
-          <li>Batch milestone events (pricing complete, valuation complete)</li>
-          <li>Date rollover events (zone business date advanced)</li>
+          <li><strong>Fund setup</strong>: new fund onboarding via Asset Arena Admin console; requires zone assignment, calendar selection, fee schedule, compliance ruleset.</li>
+          <li><strong>Instrument master updates</strong>: daily ingest from Bloomberg BVAL reference data feed; manual override capability for OTC instruments.</li>
+          <li><strong>Calendar maintenance</strong>: annual calendar load from exchange-published holiday schedules; ad-hoc updates for unscheduled market closures.</li>
+          <li><strong>SSI updates</strong>: custodian SSI changes routed through maker-checker workflow with 4-eye approval.</li>
         </ul>
-
-        <div class="note">
-          Avoid including raw schemas in a portfolio unless you have explicit rights. Abstracting the intent and impact
-          is often more impressive than listing columns.
-        </div>
+        <h2>Oracle Coherence Cache Invalidation</h2>
+        <ul>
+          <li><strong>Configuration change events</strong>: fund setup changes, SSI updates, and calendar modifications trigger targeted Coherence cache invalidation via JMS event.</li>
+          <li><strong>Batch milestone events</strong>: pricing ingestion complete, NAV calculated, and historization complete trigger cache refresh for dependent data regions.</li>
+          <li><strong>Date rollover events</strong>: business date advance invalidates all date-sensitive cache entries (settlement calendars, order validity, dealing deadlines).</li>
+        </ul>
+        <h2>Environment Configuration</h2>
+        <ul>
+          <li><strong>WebLogic JNDI</strong>: datasource, JMS queue, and external endpoint configurations managed per environment (DEV, UAT, PROD).</li>
+          <li><strong>Feature flags</strong>: new features can be enabled per fund, per zone, or globally via configuration table; no code deployment required for flag changes.</li>
+          <li><strong>Sensitive credentials</strong>: Oracle wallet and WebLogic credential store for database passwords, SWIFT keys, and Bloomberg API tokens.</li>
+        </ul>
+        <div class="note">All reference data changes in production require change management approval (ServiceNow CR) and are applied during designated maintenance windows unless classified as emergency changes.</div>
       </div>
-
       <div id="site-footer"></div>
     </main>
   </body>

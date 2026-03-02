@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Failover & Audit Design</title>
+    <title>Failover & Audit — SunGard Asset Arena Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -15,85 +15,74 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div>
-            <h1>Enterprise Investment Management Platform</h1>
-            <div class="tagline">Failover & audit design</div>
-          </div>
-          <div class="tagline">Per-event transaction isolation and controlled retries</div>
+          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Failover &amp; audit design</div></div>
+          <div class="tagline">JMS retry, JTA transaction isolation, and Oracle audit trail</div>
         </div>
         <div id="site-nav"></div>
       </div>
     </header>
-
     <main class="container">
       <div class="panel">
         <h2>Design Goals</h2>
         <ul>
-          <li><strong>Data integrity</strong>: failures do not corrupt positions, cash, or state transitions.</li>
-          <li><strong>Deterministic retries</strong>: reprocessing produces consistent outcomes (idempotency).</li>
-          <li><strong>Auditability</strong>: every processing decision can be traced end-to-end.</li>
-          <li><strong>Operational control</strong>: failover modes are explicit, observable, and reversible.</li>
+          <li><strong>Data integrity</strong>: failures never corrupt fund positions, NAV, cash balances, or order state.</li>
+          <li><strong>Deterministic retries</strong>: reprocessing a failed event produces the same outcome (idempotency).</li>
+          <li><strong>Auditability</strong>: every processing decision is traceable in Oracle audit tables.</li>
+          <li><strong>Operational control</strong>: failover modes are explicit, observable via Splunk, and reversible.</li>
         </ul>
-
-        <h2>Event-Level Transaction Isolation</h2>
-        <p>
-          A common pattern is <strong>per-event transactional processing</strong>: each event (or small event batch) is processed
-          in its own database transaction, allowing partial progress while isolating failures.
-        </p>
-
+        <h2>Event-Level Transaction Isolation (JTA)</h2>
+        <p>Asset Arena processes trade lifecycle events using <strong>per-event JTA transactions</strong> managed by WebLogic. Each JMS message is processed in its own database transaction, allowing partial progress while isolating failures to individual events.</p>
         <div class="mermaid">
 sequenceDiagram
   autonumber
-  participant Q as Event Queue
-  participant W as Worker
-  participant DB as Database
-  participant A as Audit
+  participant MQ as IBM MQ Series
+  participant MDB as Message-Driven Bean
+  participant ORA as Oracle RAC
+  participant AUD as Audit Table
 
-  Q->>W: Deliver event E
-  W->>A: Write audit row (E, status=RECEIVED)
-  W->>DB: BEGIN TX
-  W->>DB: Apply business updates for E
+  MQ->>MDB: Deliver JMS message (trade event)
+  MDB->>AUD: Insert audit row (event_id, status=RECEIVED)
+  MDB->>ORA: BEGIN JTA TX
+  MDB->>ORA: Apply business updates (positions, cash, settlement)
   alt success
-    W->>DB: COMMIT
-    W->>A: Update audit (status=SUCCESS)
+    MDB->>ORA: COMMIT
+    MDB->>AUD: Update audit (status=SUCCESS)
+    MDB->>MQ: Acknowledge message
   else failure
-    W->>DB: ROLLBACK
-    W->>A: Update audit (status=FAILED, error_code)
-    W->>Q: Requeue E (retry policy)
+    MDB->>ORA: ROLLBACK
+    MDB->>AUD: Update audit (status=FAILED, error_code)
+    MDB->>MQ: Message returned to queue (retry backoff)
   end
         </div>
-
-        <h2>Audit Table (Generic)</h2>
-        <p>
-          The audit model typically captures stable identifiers, processing state, and retry context. Names and exact
-          schemas are intentionally generic.
-        </p>
-        <pre><code>EVENT_PROCESSING_AUDIT
-  - event_id (stable)
-  - event_type
-  - portfolio_id (or partition key)
-  - business_date
-  - status (RECEIVED|IN_PROGRESS|SUCCESS|FAILED|SKIPPED)
-  - attempt_count
-  - last_error_code
-  - last_error_message (sanitized)
-  - started_at / finished_at
-  - worker_id (logical)
+        <h2>Audit Table Schema</h2>
+        <pre><code>AA_EVENT_PROCESSING_AUDIT
+  - event_id          NUMBER(18) -- stable event identifier
+  - event_type        VARCHAR2(50) -- TRADE_EXEC, ALLOCATION, SETTLEMENT, CORP_ACTION
+  - fund_id           NUMBER(12) -- fund partition key
+  - business_date     DATE
+  - status            VARCHAR2(20) -- RECEIVED | IN_PROGRESS | SUCCESS | FAILED | SKIPPED
+  - attempt_count     NUMBER(3)
+  - last_error_code   VARCHAR2(20)
+  - last_error_msg    VARCHAR2(500)
+  - started_at        TIMESTAMP WITH TIME ZONE
+  - finished_at       TIMESTAMP WITH TIME ZONE
+  - worker_id         VARCHAR2(50) -- WebLogic managed server name
 </code></pre>
-
-        <h2>Failover Execution Mode</h2>
+        <h2>Failover Execution Modes</h2>
         <ul>
-          <li><strong>Normal</strong>: active workers process events with standard retry policy.</li>
-          <li><strong>Degraded</strong>: reduce concurrency to protect dependent systems (DB, downstream services).</li>
-          <li><strong>Recovery</strong>: reprocess a targeted partition (e.g., a zone or portfolio group) from a checkpoint.</li>
+          <li><strong>Normal</strong>: all MDB listeners active, standard JMS retry policy (3 retries with exponential backoff).</li>
+          <li><strong>Degraded</strong>: reduce MDB pool size to protect Oracle RAC under load; disable non-critical event types.</li>
+          <li><strong>Recovery</strong>: replay events for a specific fund or zone from the audit table checkpoint; manual trigger via Asset Arena Admin console.</li>
         </ul>
-
-        <div class="note">
-          The “mature” signal here is documenting how retries, isolation, and audit combine to produce operationally
-          safe behavior.
-        </div>
+        <h2>Dead Letter Queue (DLQ) Handling</h2>
+        <ul>
+          <li>Events exceeding max retry count are moved to MQ dead letter queue.</li>
+          <li>DLQ monitor raises P1 alert in Splunk with event details.</li>
+          <li>Operations team investigates, fixes root cause, and replays from DLQ or audit checkpoint.</li>
+          <li>All DLQ events must be resolved before the next NAV batch window for the affected zone.</li>
+        </ul>
+        <div class="note">The failover design ensures that a single failed trade event never blocks processing of other events in the same fund or zone. Oracle RAC transparent application failover (TAF) handles database node failures without MDB awareness.</div>
       </div>
-
       <div id="site-footer"></div>
     </main>
   </body>
