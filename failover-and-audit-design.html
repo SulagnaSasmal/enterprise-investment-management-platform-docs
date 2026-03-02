@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Failover & Audit — SunGard Asset Arena Manager</title>
+    <title>Failover & Audit — SunBridge Asset Atrium Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -15,7 +15,7 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Failover &amp; audit design</div></div>
+          <div><h1>SunBridge Asset Atrium Manager</h1><div class="tagline">Failover &amp; audit design</div></div>
           <div class="tagline">JMS retry, JTA transaction isolation, and Oracle audit trail</div>
         </div>
         <div id="site-nav"></div>
@@ -23,15 +23,15 @@
     </header>
     <main class="container">
       <div class="panel">
-        <h2>Design Goals</h2>
+        <h2>Design goals</h2>
         <ul>
           <li><strong>Data integrity</strong>: failures never corrupt fund positions, NAV, cash balances, or order state.</li>
           <li><strong>Deterministic retries</strong>: reprocessing a failed event produces the same outcome (idempotency).</li>
           <li><strong>Auditability</strong>: every processing decision is traceable in Oracle audit tables.</li>
           <li><strong>Operational control</strong>: failover modes are explicit, observable via Splunk, and reversible.</li>
         </ul>
-        <h2>Event-Level Transaction Isolation (JTA)</h2>
-        <p>Asset Arena processes trade lifecycle events using <strong>per-event JTA transactions</strong> managed by WebLogic. Each JMS message is processed in its own database transaction, allowing partial progress while isolating failures to individual events.</p>
+        <h2>Event-level transaction isolation (JTA)</h2>
+        <p>Asset Atrium processes trade lifecycle events using <strong>per-event JTA transactions</strong> managed by WebLogic. Each JMS message is processed in its own database transaction, allowing partial progress while isolating failures to individual events.</p>
         <div class="mermaid">
 sequenceDiagram
   autonumber
@@ -54,8 +54,8 @@ sequenceDiagram
     MDB->>MQ: Message returned to queue (retry backoff)
   end
         </div>
-        <h2>Audit Table Schema</h2>
-        <pre><code>AA_EVENT_PROCESSING_AUDIT
+        <h2>Audit table schema</h2>
+        <pre><code>AT_EVENT_PROCESSING_AUDIT
   - event_id          NUMBER(18) -- stable event identifier
   - event_type        VARCHAR2(50) -- TRADE_EXEC, ALLOCATION, SETTLEMENT, CORP_ACTION
   - fund_id           NUMBER(12) -- fund partition key
@@ -68,13 +68,13 @@ sequenceDiagram
   - finished_at       TIMESTAMP WITH TIME ZONE
   - worker_id         VARCHAR2(50) -- WebLogic managed server name
 </code></pre>
-        <h2>Failover Execution Modes</h2>
+        <h2>Failover execution modes</h2>
         <ul>
           <li><strong>Normal</strong>: all MDB listeners active, standard JMS retry policy (3 retries with exponential backoff).</li>
           <li><strong>Degraded</strong>: reduce MDB pool size to protect Oracle RAC under load; disable non-critical event types.</li>
-          <li><strong>Recovery</strong>: replay events for a specific fund or zone from the audit table checkpoint; manual trigger via Asset Arena Admin console.</li>
+          <li><strong>Recovery</strong>: replay events for a specific fund or zone from the audit table checkpoint; manual trigger via Asset Atrium Admin console.</li>
         </ul>
-        <h2>Dead Letter Queue (DLQ) Handling</h2>
+        <h2>Dead letter queue (DLQ) handling</h2>
         <ul>
           <li>Events exceeding max retry count are moved to MQ dead letter queue.</li>
           <li>DLQ monitor raises P1 alert in Splunk with event details.</li>

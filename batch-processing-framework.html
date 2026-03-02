@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Batch Processing — SunGard Asset Arena Manager</title>
+    <title>Batch Processing — SunBridge Asset Atrium Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -16,7 +16,7 @@
       <div class="container">
         <div class="brand">
           <div>
-            <h1>SunGard Asset Arena Manager</h1>
+            <h1>SunBridge Asset Atrium Manager</h1>
             <div class="tagline">Batch processing framework — NAV &amp; fund accounting</div>
           </div>
           <div class="tagline">Orchestration, dependencies, and idempotency</div>
@@ -27,7 +27,7 @@
 
     <main class="container">
       <div class="panel">
-        <h2>Batch Families</h2>
+        <h2>Batch families</h2>
         <ul>
           <li><strong>NAV Calculation</strong>: pricing ingestion, portfolio valuation, accruals, fee computation, official NAV publication</li>
           <li><strong>Fund Accounting EOD</strong>: journal posting, trial balance, P&amp;L crystallization, multi-GAAP adjustments</li>
@@ -37,9 +37,9 @@
           <li><strong>Reporting</strong>: client reporting packs, regulatory report generation (UCITS, AIFMD Annex IV), data warehouse load</li>
         </ul>
 
-        <h2>NAV Calculation Orchestration</h2>
+        <h2>NAV calculation orchestration</h2>
         <p>
-          The Asset Arena Scheduler executes NAV calculation as a dependency graph of parameterized jobs.
+          The Asset Atrium Scheduler executes NAV calculation as a dependency graph of parameterized jobs.
           Each step has pre-conditions, produces auditable outputs, and supports idempotent reruns.
         </p>
 
@@ -60,7 +60,7 @@ flowchart TD
   VAL -->|rerun safe| VAL
         </div>
 
-        <h2>Key Design Requirements</h2>
+        <h2>Key design requirements</h2>
         <ul>
           <li><strong>Dependency sequencing</strong>: pricing must complete before valuation; valuation before fee calculation; fees before NAV.</li>
           <li><strong>Idempotency</strong>: rerunning NAV calculation for the same fund/date produces identical results given same inputs.</li>
@@ -69,9 +69,9 @@ flowchart TD
           <li><strong>Late price handling</strong>: configurable wait windows per pricing source; fallback to prior-day price with flagging.</li>
         </ul>
 
-        <h2>Asset Arena Scheduler CLI</h2>
+        <h2>Asset Atrium Scheduler CLI</h2>
         <pre><code># Run NAV batch for EMEA funds with explicit valuation date
-aa-scheduler run \
+at-scheduler run \
   --batch-family nav-calculation \
   --zone EMEA \
   --valuation-date 2026-03-01 \
@@ -81,9 +81,9 @@ aa-scheduler run \
   --dry-run false
 </code></pre>
 
-        <h2>Zone-Based Execution</h2>
+        <h2>Zone-based execution</h2>
         <p>
-          Asset Arena runs the same NAV batch graph multiple times — once per processing zone. Each zone has its
+          Asset Atrium runs the same NAV batch graph multiple times — once per processing zone. Each zone has its
           own market calendar, NAV cut-off time, and pricing source configuration. APAC funds process first,
           followed by EMEA, then Americas.
         </p>

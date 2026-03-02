@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Multi-Time Zone Processing — SunGard Asset Arena Manager</title>
+    <title>Multi-Time Zone Processing — SunBridge Asset Atrium Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -15,7 +15,7 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Multi-time zone processing</div></div>
+          <div><h1>SunBridge Asset Atrium Manager</h1><div class="tagline">Multi-time zone processing</div></div>
           <div class="tagline">Global fund processing, NAV cut-offs, and calendar management</div>
         </div>
         <div id="site-nav"></div>
@@ -23,13 +23,13 @@
     </header>
     <main class="container">
       <div class="panel">
-        <h2>Problem Statement</h2>
-        <p>Global fund administrators manage funds domiciled across APAC, EMEA, and Americas jurisdictions. Each fund has different NAV cut-off times, market holidays, and settlement calendars. Asset Arena must process each fund according to its domicile rules while sharing a single platform instance.</p>
-        <h2>Core Concepts</h2>
+        <h2>Problem statement</h2>
+        <p>Global fund administrators manage funds domiciled across APAC, EMEA, and Americas jurisdictions. Each fund has different NAV cut-off times, market holidays, and settlement calendars. Asset Atrium must process each fund according to its domicile rules while sharing a single platform instance.</p>
+        <h2>Core concepts</h2>
         <ul>
-          <li><strong>Processing zone</strong>: a named zone aligned to a regulatory domicile (e.g., APAC-HK, EMEA-LUX, EMEA-IE, AMER-US).</li>
+          <li><strong>Processing zone</strong>: a named zone aligned to a regulatory domicile (for example, APAC-HK, EMEA-LUX, EMEA-IE, AMER-US).</li>
           <li><strong>Fund-to-zone association</strong>: each fund/sub-fund is assigned a processing zone that defines NAV cut-off and business day boundaries.</li>
-          <li><strong>Zone-based batch segmentation</strong>: the Asset Arena Scheduler runs NAV batches per zone with zone-specific valuation dates and pricing sources.</li>
+          <li><strong>Zone-based batch segmentation</strong>: the Asset Atrium Scheduler runs NAV batches per zone with zone-specific valuation dates and pricing sources.</li>
           <li><strong>Transfer agent deadlines</strong>: subscription/redemption cut-off times are zone-specific and drive dealing calendar logic.</li>
         </ul>
         <div class="mermaid">
@@ -39,16 +39,16 @@ flowchart LR
   ZONE --> CUT[NAV Cut-Off Time]
   CAL --> BIZ[Business Date D]
 
-  subgraph AA_Batch[Asset Arena Batch]
+  subgraph AT_Batch[Asset Atrium Batch]
     PRICE[Pricing Ingestion]
     VAL[NAV Calculation]
     PUB[NAV Publication to TA]
   end
 
-  BIZ --> AA_Batch
-  AA_Batch --> OUT[Official NAV per zone]
+  BIZ --> AT_Batch
+  AT_Batch --> OUT[Official NAV per zone]
         </div>
-        <h2>Zone Configuration</h2>
+        <h2>Zone configuration</h2>
         <ul>
           <li><strong>APAC-HK</strong>: Hong Kong / Singapore funds — NAV cut-off 16:00 HKT, HKEX + SGX calendars, Bloomberg BVAL APAC snap</li>
           <li><strong>EMEA-LUX</strong>: Luxembourg UCITS funds — NAV cut-off 18:00 CET, Euronext + LSE calendars, BVAL EU snap</li>
@@ -56,22 +56,22 @@ flowchart LR
           <li><strong>AMER-US</strong>: US registered funds — NAV cut-off 16:00 ET, NYSE + NASDAQ calendars, BVAL US snap</li>
           <li><strong>AMER-CAY</strong>: Cayman hedge funds — NAV cut-off flexible (monthly), composite calendar</li>
         </ul>
-        <h2>D+1 Trade Acceptance</h2>
-        <p>Asset Arena supports forward-dated order entry where a fund's zone has already rolled to D+1 but other zones remain on D. The platform validates:</p>
+        <h2>D+1 trade acceptance</h2>
+        <p>Asset Atrium supports forward-dated order entry where a fund's zone has already rolled to D+1 but other zones remain on D. The platform validates:</p>
         <ul>
           <li>Trade date against the fund's zone calendar (holidays, weekends, market closures).</li>
           <li>Settlement date projection using the correct T+n convention for the instrument's settlement market.</li>
           <li>Downstream consistency: allocation, confirmation, and settlement instruction generation all reference the same business date.</li>
         </ul>
-        <h2>Database Configuration</h2>
-        <p>Zone configuration is stored in Asset Arena's Oracle schema with the following reference data:</p>
+        <h2>Database configuration</h2>
+        <p>Zone configuration is stored in Asset Atrium's Oracle schema with the following reference data:</p>
         <ul>
           <li>Zone master table: zone code, description, base timezone, NAV cut-off time</li>
           <li>Fund-zone mapping: fund ID &rarr; zone code (many-to-one)</li>
           <li>Calendar sets: zone code &rarr; market calendar IDs (composite calendar support)</li>
           <li>Pricing source rules: zone code &rarr; pricing vendor + snap time</li>
         </ul>
-        <div class="note">The key differentiator is not "knowing time zones" — it's how Asset Arena coordinates zones, calendars, pricing sources, and batch windows into a deterministic, auditable NAV production pipeline.</div>
+        <div class="note">The key differentiator is not "knowing time zones" — it's how Asset Atrium coordinates zones, calendars, pricing sources, and batch windows into a deterministic, auditable NAV production pipeline.</div>
       </div>
       <div id="site-footer"></div>
     </main>

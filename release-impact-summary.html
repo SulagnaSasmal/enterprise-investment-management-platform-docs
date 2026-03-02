@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Release Impact Summary — SunGard Asset Arena Manager</title>
+    <title>Release Impact Summary — SunBridge Asset Atrium Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
   </head>
@@ -11,7 +11,7 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Release impact summary</div></div>
+          <div><h1>SunBridge Asset Atrium Manager</h1><div class="tagline">Release impact summary</div></div>
           <div class="tagline">Governance: ops readiness, risk, compatibility</div>
         </div>
         <div id="site-nav"></div>
@@ -19,43 +19,43 @@
     </header>
     <main class="container">
       <div class="panel">
-        <h2>Release Overview</h2>
-        <p>This section provides an operations-ready summary of Asset Arena platform changes. It is structured for Change Advisory Board (CAB) review and operations sign-off.</p>
-        <h2>Functional Impact</h2>
+        <h2>Release overview</h2>
+        <p>This section provides an operations-ready summary of Asset Atrium platform changes. It is structured for Change Advisory Board (CAB) review and operations sign-off.</p>
+        <h2>Functional impact</h2>
         <ul>
           <li>NAV batch processing becomes zone-aware, aligning valuation to fund domicile business dates.</li>
           <li>Business date rollover formalized as a coordinated lifecycle event across WebLogic cluster nodes.</li>
           <li>JMS failover and retry behavior becomes explicit and auditable per event in Oracle audit tables.</li>
           <li>Pre-trade compliance engine extended with new UCITS concentration limit rules.</li>
         </ul>
-        <h2>Operational Impact</h2>
+        <h2>Operational impact</h2>
         <ul>
           <li>New Splunk dashboards: NAV batch milestones per zone, audit failure rates, rollover timing</li>
           <li>Updated runbooks: recovery mode activation, targeted fund reprocess, Coherence cache flush</li>
           <li>Capacity planning: peak Oracle RAC load shifts as APAC/EMEA/Americas zones process sequentially</li>
           <li>MQ monitoring: new DLQ alerting rules for zone-specific event processing failures</li>
         </ul>
-        <h2>Deployment Approach</h2>
+        <h2>Deployment approach</h2>
         <ul>
           <li>WebLogic rolling deployment: zero-downtime upgrade using F5 drain + restart per node.</li>
           <li>Oracle schema changes via Liquibase: expand-migrate-contract pattern, backwards-compatible.</li>
           <li>Feature flags: zone-based batch processing enabled per zone (APAC first, then EMEA, then Americas).</li>
           <li>Rollback plan: feature flags revert to single-zone behavior; Liquibase contract step deferred.</li>
         </ul>
-        <h2>Backward Compatibility</h2>
+        <h2>Backward compatibility</h2>
         <ul>
-          <li>AAIM API maintains existing contract; zone parameter is optional with default to legacy single-zone.</li>
+          <li>ATIM API maintains existing contract; zone parameter is optional with default to legacy single-zone.</li>
           <li>FIX Gateway message format unchanged; new zone metadata added as optional tags.</li>
           <li>SWIFT MT5xx generation unaffected; settlement date calculation uses existing calendar logic with zone override.</li>
         </ul>
-        <h2>Risk Assessment</h2>
+        <h2>Risk assessment</h2>
         <ul>
           <li>Incorrect zone-calendar mapping causes NAV calculation against wrong business date — mitigated by pre-batch calendar validation check.</li>
           <li>Rollover timing drift across WebLogic nodes creates inconsistent business date — mitigated by atomic rollover protocol with node convergence timeout.</li>
           <li>JMS retry storms under zone failure overload Oracle RAC — mitigated by MDB pool size reduction in degraded mode.</li>
           <li>Late pricing for APAC zone delays EMEA batch start — mitigated by independent zone batch windows with configurable wait thresholds.</li>
         </ul>
-        <h2>Monitoring &amp; Alerting Requirements</h2>
+        <h2>Monitoring &amp; alerting requirements</h2>
         <ul>
           <li>Per-zone NAV batch: start, end, duration, success/failure count (Splunk + PagerDuty)</li>
           <li>Event processing audit: status distribution, retry depth, oldest-failed event age</li>

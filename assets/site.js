@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   const pages = [
     { href: 'index.html', title: 'Home' },
     { href: 'platform-overview.html', title: 'Platform Overview' },
@@ -57,7 +57,7 @@
     const year = new Date().getFullYear();
     host.innerHTML = `
       <div class="footer">
-        <div>&copy; ${year} &bull; SunGard Asset Arena Manager (FIS) &mdash; Platform Architecture &amp; Operations Documentation</div>
+        <div>&copy; ${year} &bull; SunBridge Asset Atrium Manager (FGS) &mdash; Platform Architecture &amp; Operations Documentation</div>
         <div class="small">Internal reference documentation. Not for external distribution.</div>
       </div>
     `;

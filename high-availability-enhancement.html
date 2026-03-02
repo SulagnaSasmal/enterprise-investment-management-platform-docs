@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>High Availability — SunGard Asset Arena Manager</title>
+    <title>High Availability — SunBridge Asset Atrium Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -15,7 +15,7 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">High availability &amp; 24&times;7 server model</div></div>
+          <div><h1>SunBridge Asset Atrium Manager</h1><div class="tagline">High availability &amp; 24&times;7 server model</div></div>
           <div class="tagline">WebLogic clustering, Oracle RAC, and DR design</div>
         </div>
         <div id="site-nav"></div>
@@ -24,8 +24,8 @@
     <main class="container">
       <div class="panel">
         <h2>Objective</h2>
-        <p>Enable a <strong>24&times;7 Asset Arena application server</strong> that remains available during NAV calculation and fund accounting batch windows, while preserving correctness for date-sensitive operations and Oracle Coherence cache coherence.</p>
-        <h2>Architecture Summary</h2>
+        <p>Enable a <strong>24&times;7 Asset Atrium application server</strong> that remains available during NAV calculation and fund accounting batch windows, while preserving correctness for date-sensitive operations and Oracle Coherence cache coherence.</p>
+        <h2>Architecture summary</h2>
         <ul>
           <li><strong>Active/active WebLogic cluster</strong> behind F5 load balancer with session affinity</li>
           <li><strong>Oracle RAC</strong> (2+ nodes) for database-level redundancy with automatic instance failover</li>
@@ -33,12 +33,12 @@
           <li><strong>Rolling restart strategy</strong> for WebLogic nodes to apply patches without full outage</li>
           <li><strong>Coherence cache federation</strong> for cross-data-center cache replication</li>
         </ul>
-        <h2>Business Date Rollover (D &rarr; D+1)</h2>
-        <p>Date rollover in Asset Arena is a coordinated lifecycle event triggered by the Asset Arena Scheduler based on fund domicile zone calendars. All WebLogic nodes must advance atomically.</p>
+        <h2>Business date rollover (D &rarr; D+1)</h2>
+        <p>Date rollover in Asset Atrium is a coordinated lifecycle event triggered by the Asset Atrium Scheduler based on fund domicile zone calendars. All WebLogic nodes must advance atomically.</p>
         <div class="mermaid">
 sequenceDiagram
   autonumber
-  participant SCH as Asset Arena Scheduler
+  participant SCH as Asset Atrium Scheduler
   participant WL1 as WebLogic Node A
   participant WL2 as WebLogic Node B
   participant ORA as Oracle RAC
@@ -55,22 +55,22 @@ sequenceDiagram
   SCH->>WL1: Exit rollover mode
   SCH->>WL2: Exit rollover mode
         </div>
-        <h2>Order Eligibility Cleanup at Rollover</h2>
+        <h2>Order eligibility cleanup at rollover</h2>
         <ul>
           <li>Re-evaluate pending orders with date constraints (valid-from/valid-until, market calendar rules).</li>
           <li>Expire GTC/GTD orders that fall outside D+1 calendar boundaries.</li>
           <li>Regenerate settlement date projections using D+1 market calendars (T+1, T+2 rules).</li>
           <li>Write auditable lifecycle updates for every order state change triggered by rollover.</li>
         </ul>
-        <h2>WebLogic Rolling Restart Procedure</h2>
+        <h2>WebLogic rolling restart procedure</h2>
         <ul>
           <li>Drain node via F5 health check disable &rarr; complete all inflight EJB transactions &rarr; graceful shutdown.</li>
           <li>Apply patch or configuration change to the stopped node.</li>
           <li>Restart node, verify Coherence cache re-join and Oracle connection pool health.</li>
-          <li>Re-enable in F5 load balancer after health check passes (AAIM heartbeat endpoint).</li>
+          <li>Re-enable in F5 load balancer after health check passes (ATIM heartbeat endpoint).</li>
           <li>Repeat for each remaining node in the cluster.</li>
         </ul>
-        <h2>Disaster Recovery</h2>
+        <h2>Disaster recovery</h2>
         <ul>
           <li><strong>RPO target</strong>: &lt;15 minutes (Oracle Data Guard synchronous redo shipping)</li>
           <li><strong>RTO target</strong>: &lt;4 hours (automated failover for Oracle; manual WebLogic bring-up at DR)</li>

@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Diagrams — SunGard Asset Arena Manager</title>
+    <title>Diagrams — SunBridge Asset Atrium Manager</title>
     <link rel="stylesheet" href="../assets/styles.css" />
     <script defer src="../assets/site.js"></script>
     <script type="module">
@@ -15,7 +15,7 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Diagram library</div></div>
+          <div><h1>SunBridge Asset Atrium Manager</h1><div class="tagline">Diagram library</div></div>
           <div class="tagline">Architecture and processing flow diagrams</div>
         </div>
         <div id="site-nav"></div>
@@ -23,10 +23,10 @@
     </header>
     <main class="container">
       <div class="panel">
-        <h2>Asset Arena System Architecture</h2>
+        <h2>Asset Atrium system architecture</h2>
         <div class="mermaid">
 flowchart LR
-  UI[AAIM Client] --> WL[WebLogic Cluster]
+  UI[ATIM Client] --> WL[WebLogic Cluster]
   FIX[FIX Gateway] --> WL
   WL --> ORA[(Oracle 19c RAC)]
   WL --> MQ[(IBM MQ Series)]
@@ -37,7 +37,7 @@ flowchart LR
   MQ --> WL
         </div>
 
-        <h2>NAV Calculation Batch Lifecycle</h2>
+        <h2>NAV calculation batch lifecycle</h2>
         <div class="mermaid">
 flowchart TD
   A[Pricing Sources Ready] --> B[Pre-checks: calendar + locks]
@@ -50,7 +50,7 @@ flowchart TD
   H --> I[Historization to Data Warehouse]
         </div>
 
-        <h2>Multi-Time Zone Fund Processing</h2>
+        <h2>Multi-time zone fund processing</h2>
         <div class="mermaid">
 flowchart LR
   FUND[Fund] --> ZONE[Processing Zone]
@@ -61,7 +61,7 @@ flowchart LR
   BATCH --> NAV[Official NAV Published]
         </div>
 
-        <h2>JMS Event Failover Flow</h2>
+        <h2>JMS event failover flow</h2>
         <div class="mermaid">
 flowchart TD
   MQ[IBM MQ] --> MDB[Message-Driven Bean]
@@ -74,11 +74,11 @@ flowchart TD
   ROLLBACK --> RETRY[Requeue with Backoff]
         </div>
 
-        <h2>Business Date Rollover (D &rarr; D+1)</h2>
+        <h2>Business date rollover (D &rarr; D+1)</h2>
         <div class="mermaid">
 sequenceDiagram
   autonumber
-  participant SCH as Asset Arena Scheduler
+  participant SCH as Asset Atrium Scheduler
   participant WL as WebLogic Cluster
   participant ORA as Oracle RAC
   participant COH as Oracle Coherence

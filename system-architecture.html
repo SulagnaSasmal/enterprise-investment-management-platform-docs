@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>System Architecture — SunGard Asset Arena Manager</title>
+    <title>System Architecture — SunBridge Asset Atrium Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
     <script type="module">
@@ -16,7 +16,7 @@
       <div class="container">
         <div class="brand">
           <div>
-            <h1>SunGard Asset Arena Manager</h1>
+            <h1>SunBridge Asset Atrium Manager</h1>
             <div class="tagline">System architecture — components and integration flows</div>
           </div>
           <div class="tagline">J2EE / Oracle / SWIFT / Bloomberg</div>
@@ -27,16 +27,16 @@
 
     <main class="container">
       <div class="panel">
-        <h2>Component Architecture</h2>
+        <h2>Component architecture</h2>
         <p>
-          Asset Arena Manager is deployed as a multi-tier J2EE application. The platform consists of a WebLogic
+          Asset Atrium Manager is deployed as a multi-tier J2EE application. The platform consists of a WebLogic
           application server cluster, an Oracle RAC database tier, IBM MQ Series messaging, and external integrations
           for market data, settlement, and order routing.
         </p>
 
         <div class="mermaid">
 flowchart LR
-  UI[AAIM Client / Web UI] -->|HTTPS| WL[WebLogic Cluster]
+  UI[ATIM Client / Web UI] -->|HTTPS| WL[WebLogic Cluster]
   FIX[FIX Gateway] -->|FIX 4.4| WL
 
   subgraph WL[WebLogic Application Server Cluster]
@@ -50,7 +50,7 @@ flowchart LR
   WL --> SW[SWIFT Alliance Lite2]
   WL --> BBG[Bloomberg B-PIPE]
 
-  BATCH[Asset Arena Scheduler] --> ORA
+  BATCH[Asset Atrium Scheduler] --> ORA
   BATCH --> MQ
   MQ --> WL
   MQ --> RECON[Reconciliation Engine]
@@ -59,9 +59,9 @@ flowchart LR
   MON -.metrics.-> BATCH
         </div>
 
-        <h2>Online Order Flow</h2>
+        <h2>Online order flow</h2>
         <ul>
-          <li>Portfolio manager enters an order via the AAIM thick client or web interface.</li>
+          <li>Portfolio manager enters an order via the ATIM thick client or web interface.</li>
           <li>Order reaches the WebLogic cluster through HTTPS with session affinity.</li>
           <li>Pre-trade compliance evaluates the order against investment mandates and fund prospectus rules.</li>
           <li>Approved orders are persisted to Oracle and published to MQ for downstream processing.</li>
@@ -69,7 +69,7 @@ flowchart LR
           <li>Execution confirmations flow back via FIX, triggering allocation and settlement workflows.</li>
         </ul>
 
-        <h2>Order State Transitions</h2>
+        <h2>Order state transitions</h2>
         <div class="mermaid">
 stateDiagram-v2
   [*] --> New
@@ -89,7 +89,7 @@ stateDiagram-v2
   Canceled --> [*]
         </div>
 
-        <h2>Technology Stack</h2>
+        <h2>Technology stack</h2>
         <ul>
           <li><strong>Application server</strong>: Oracle WebLogic 14c (J2EE 8) with Oracle Coherence distributed caching</li>
           <li><strong>Database</strong>: Oracle 19c RAC with Data Guard for DR</li>
@@ -100,7 +100,7 @@ stateDiagram-v2
           <li><strong>Monitoring</strong>: Splunk, AppDynamics, Grafana/Prometheus</li>
         </ul>
 
-        <h2>Cache Architecture (Oracle Coherence)</h2>
+        <h2>Cache architecture (Oracle Coherence)</h2>
         <ul>
           <li><strong>Event-triggered</strong>: instrument master, counterparty, SSI caches refresh on JMS change events.</li>
           <li><strong>Batch-triggered</strong>: position and valuation caches refresh after pricing or NAV milestones.</li>

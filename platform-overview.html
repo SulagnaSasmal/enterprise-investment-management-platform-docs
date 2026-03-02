@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Platform Overview — SunGard Asset Arena Manager</title>
+    <title>Platform Overview — SunBridge Asset Atrium Manager</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
   </head>
@@ -11,7 +11,7 @@
     <header class="header">
       <div class="container">
         <div class="brand">
-          <div><h1>SunGard Asset Arena Manager</h1><div class="tagline">Platform overview — modules and capabilities</div></div>
+          <div><h1>SunBridge Asset Atrium Manager</h1><div class="tagline">Platform overview — modules and capabilities</div></div>
           <div class="tagline">Architecture &amp; operations documentation</div>
         </div>
         <div id="site-nav"></div>
@@ -19,12 +19,12 @@
     </header>
     <main class="container">
       <div class="panel">
-        <h2>About Asset Arena Manager</h2>
-        <p>SunGard Asset Arena Manager (now part of FIS) is an enterprise investment management platform supporting the complete trade lifecycle, portfolio management, fund accounting, and regulatory reporting. Deployed on-premise or managed hosting, it serves asset managers, hedge funds, insurance companies, pension funds, and fund administrators across 30+ countries.</p>
-        <h2>Core Modules</h2>
+        <h2>About Asset Atrium Manager</h2>
+        <p>SunBridge Asset Atrium Manager (now part of FGS) is an enterprise investment management platform supporting the complete trade lifecycle, portfolio management, fund accounting, and regulatory reporting. Deployed on-premise or managed hosting, it serves asset managers, hedge funds, insurance companies, pension funds, and fund administrators across 30+ countries.</p>
+        <h2>Core modules</h2>
         <div class="grid cols-2">
           <div class="panel">
-            <h3>Asset Arena Investment Manager (AAIM)</h3>
+            <h3>Asset Atrium Investment Manager (ATIM)</h3>
             <ul>
               <li>Portfolio hierarchy (funds, sub-funds, strategies, sleeves)</li>
               <li>Order management with pre-trade compliance</li>
@@ -36,7 +36,7 @@
             </ul>
           </div>
           <div class="panel">
-            <h3>Asset Arena Settlement Manager</h3>
+            <h3>Asset Atrium Settlement Manager</h3>
             <ul>
               <li>SWIFT MT5xx settlement instruction generation</li>
               <li>Custodian reconciliation (position, cash, transaction)</li>
@@ -48,7 +48,7 @@
         </div>
         <div class="grid cols-2">
           <div class="panel">
-            <h3>Asset Arena Fund Administrator</h3>
+            <h3>Asset Atrium Fund Administrator</h3>
             <ul>
               <li>NAV calculation (official, shadow, indicative)</li>
               <li>Multi-GAAP fund accounting (IFRS, US GAAP)</li>
@@ -58,7 +58,7 @@
             </ul>
           </div>
           <div class="panel">
-            <h3>Cross-Module Services</h3>
+            <h3>Cross-module services</h3>
             <ul>
               <li>Instrument master: equities, FI, derivatives, FX, alternatives</li>
               <li>Market data: Bloomberg B-PIPE, BVAL, Refinitiv, ICE</li>
@@ -68,13 +68,13 @@
             </ul>
           </div>
         </div>
-        <h2>Processing Models</h2>
+        <h2>Processing models</h2>
         <ul>
-          <li><strong>Online</strong>: interactive order entry, portfolio inquiries via AAIM thick client or web UI</li>
+          <li><strong>Online</strong>: interactive order entry, portfolio inquiries via ATIM thick client or web UI</li>
           <li><strong>Event-driven</strong>: JMS-based async processing for trade events, corporate actions, downstream updates</li>
           <li><strong>Batch</strong>: NAV calculation, EOD pricing, fund accounting close, historization, regulatory reports</li>
         </ul>
-        <h2>Operational Requirements</h2>
+        <h2>Operational requirements</h2>
         <ul>
           <li>24&times;7 uptime with controlled business date rollover</li>
           <li>Multi-market calendar support (60+ exchanges, 40+ clearing houses)</li>
@@ -82,7 +82,7 @@
           <li>WebLogic clustering and Oracle RAC for high availability</li>
           <li>DR with RPO &lt;15 min, RTO &lt;4 hours for critical functions</li>
         </ul>
-        <div class="note">This documentation focuses on platform architecture and operations. For end-user guides, refer to the FIS Asset Arena User Guide.</div>
+        <div class="note">This documentation focuses on platform architecture and operations. For end-user guides, refer to the FGS Asset Atrium User Guide.</div>
       </div>
       <div id="site-footer"></div>
     </main>

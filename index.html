@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SunGard Asset Arena Manager — Platform Documentation</title>
+    <title>SunBridge Asset Atrium Manager — Platform Documentation</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <script defer src="assets/site.js"></script>
   </head>
@@ -12,7 +12,7 @@
       <div class="container">
         <div class="brand">
           <div>
-            <h1>SunGard Asset Arena Manager</h1>
+            <h1>SunBridge Asset Atrium Manager</h1>
             <div class="tagline">Platform architecture &amp; operations documentation</div>
           </div>
           <div class="tagline">Audience: Platform Engineers &bull; Release Managers &bull; Operations</div>
@@ -22,13 +22,13 @@
     </header>
     <main class="container">
       <div class="panel">
-        <h2>Platform Documentation Overview</h2>
-        <p>This documentation covers the architecture, operational procedures, and release governance for <strong>SunGard Asset Arena Manager</strong> (now FIS Asset Arena) — an enterprise investment management platform used by asset managers, hedge funds, insurance companies, pension funds, and fund administrators globally.</p>
-        <div class="note"><strong>Platform scope:</strong> Asset Arena Manager encompasses the Investment Manager (AAIM), Settlement Manager, and Fund Administrator modules. This documentation focuses on platform-level architecture, batch processing, high availability, and release operations.</div>
-        <h2>Platform Context</h2>
+        <h2>Platform documentation overview</h2>
+        <p>This documentation covers the architecture, operational procedures, and release governance for <strong>SunBridge Asset Atrium Manager</strong> (now FGS Asset Atrium) — an enterprise investment management platform used by asset managers, hedge funds, insurance companies, pension funds, and fund administrators globally.</p>
+        <div class="note"><strong>Platform scope:</strong> Asset Atrium Manager encompasses the Investment Manager (ATIM), Settlement Manager, and Fund Administrator modules. This documentation focuses on platform-level architecture, batch processing, high availability, and release operations.</div>
+        <h2>Platform context</h2>
         <div class="grid cols-2">
           <div class="panel">
-            <h3>What Asset Arena Manager does</h3>
+            <h3>What Asset Atrium Manager does</h3>
             <ul>
               <li>Manages the institutional trade lifecycle: order capture &rarr; compliance check &rarr; route &rarr; execute &rarr; allocate &rarr; settle</li>
               <li>Runs post-trade processing via batch and event-driven frameworks (NAV calculation, pricing, fund accounting)</li>
@@ -48,7 +48,7 @@
             </ul>
           </div>
         </div>
-        <h2>Key Platform Capabilities</h2>
+        <h2>Key platform capabilities</h2>
         <ul>
           <li><strong>Multi-entity / multi-GAAP accounting</strong> — IFRS, US GAAP, and local GAAP simultaneously</li>
           <li><strong>Zero-downtime batch model</strong> — 24&times;7 server availability during NAV and EOD batch windows</li>
@@ -56,11 +56,11 @@
           <li><strong>SWIFT &amp; FIX integration</strong> — MT5xx settlement instructions and FIX 4.2/4.4 order routing</li>
           <li><strong>Bloomberg &amp; Reuters market data</strong> — real-time and EOD pricing via Bloomberg BVAL and Refinitiv</li>
         </ul>
-        <h2>How to Navigate</h2>
+        <h2>How to navigate</h2>
         <p>Use the top navigation. Start with <a href="system-architecture.html">System Architecture</a>, then <a href="batch-processing-framework.html">Batch Framework</a> and <a href="multi-time-zone-processing.html">Multi-Time Zone Processing</a>.</p>
         <hr />
         <div class="kv">
-          <div class="k">Platform</div><div class="v">SunGard Asset Arena Manager (FIS Asset Arena) v7.x</div>
+          <div class="k">Platform</div><div class="v">SunBridge Asset Atrium Manager (FGS Asset Atrium) v7.x</div>
           <div class="k">Technology stack</div><div class="v">J2EE (WebLogic 14c), Oracle 19c RAC, IBM MQ Series, SWIFT Alliance, Bloomberg B-PIPE</div>
           <div class="k">Primary audience</div><div class="v">Platform engineers, SRE/Ops, release managers, solution architects</div>
         </div>

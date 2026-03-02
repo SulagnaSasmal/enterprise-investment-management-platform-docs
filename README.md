@@ -1,10 +1,10 @@
-# SunGard Asset Arena Manager — Platform Documentation
+﻿# SunBridge Asset Atrium Manager — Platform Documentation
 
-Enterprise HTML documentation for the SunGard Asset Arena Manager (FIS Asset Arena) investment management platform — covering system architecture, batch processing (NAV calculation), high availability, multi-time zone fund processing, failover design, and release governance.
+Enterprise HTML documentation for the SunBridge Asset Atrium Manager (FGS Asset Atrium) investment management platform. Topics include system architecture, batch processing (NAV calculation), high availability, multi-time zone fund processing, failover design, and release governance.
 
 ## Overview
 
-Asset Arena Manager is an enterprise investment management platform by SunGard (now FIS) used by asset managers, hedge funds, insurance companies, pension funds, and fund administrators globally. This documentation covers platform architecture, operational procedures, and release impact governance.
+Asset Atrium Manager is an enterprise investment management platform by SunBridge (now FGS). It serves asset managers, hedge funds, insurance companies, pension funds, and fund administrators globally. This documentation covers platform architecture, operational procedures, and release impact governance.
 
 Static HTML site hosted via GitHub Pages. No build tools or backend required.
 
@@ -13,7 +13,7 @@ Static HTML site hosted via GitHub Pages. No build tools or backend required.
 | Page | Topic |
 |------|-------|
 | `index.html` | Platform documentation overview |
-| `platform-overview.html` | Asset Arena modules — AAIM, Settlement Manager, Fund Administrator |
+| `platform-overview.html` | Asset Atrium modules — ATIM, Settlement Manager, Fund Administrator |
 | `system-architecture.html` | J2EE architecture — WebLogic, Oracle RAC, MQ, SWIFT, Bloomberg |
 | `high-availability-enhancement.html` | HA design — clustering, Oracle RAC, DR, rolling restarts |
 | `batch-processing-framework.html` | NAV calculation batch orchestration and scheduling |
@@ -36,4 +36,4 @@ Open `index.html` in any browser, or deploy to GitHub Pages for hosted access.
 
 ---
 
-*SunGard Asset Arena Manager (FIS) — Internal Use Only*
+*SunBridge Asset Atrium Manager (FGS) — Internal Use Only*
