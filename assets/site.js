@@ -59,6 +59,7 @@
       <div class="footer">
         <div>&copy; ${year} &bull; SunBridge Asset Atrium Manager (FGS) &mdash; Platform Architecture &amp; Operations Documentation</div>
         <div class="small">Internal reference documentation. Not for external distribution.</div>
+        <div class="small" style="margin-top:0.5rem;border-top:1px solid rgba(255,255,255,0.1);padding-top:0.5rem;font-style:italic;">&copy; ${year} Sulagna Sasmal. All rights reserved. Personal portfolio project for demonstration purposes only. Not affiliated with any organisation.</div>
       </div>
     `;
   }
