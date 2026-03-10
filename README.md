@@ -34,6 +34,31 @@ Static HTML site hosted via GitHub Pages. No build tools or backend required.
 
 Open `index.html` in any browser, or deploy to GitHub Pages for hosted access.
 
+## Dark / Light Mode
+
+All pages support dark and light themes via a toggle button in the navigation bar. The selected theme persists in `localStorage`. System preference (`prefers-color-scheme`) is respected on first visit.
+
+## Status
+
+**Phase: Operations & Maintenance — Complete**
+
+| Area | Status |
+|------|--------|
+| Platform architecture docs | Complete |
+| Batch processing framework | Complete |
+| High availability & failover design | Complete |
+| Multi-time zone processing | Complete |
+| Database & configuration management | Complete |
+| Release governance framework | Complete |
+| Dark / light theme support | Complete |
+
+## Future Enhancements
+
+- Fund Administrator module deep-dive (accounting, NAV publishing, distribution)
+- Settlement Manager end-to-end trade lifecycle walkthrough
+- Bloomberg BVAL / Refinitiv integration configuration guide
+- SWIFT Alliance Lite2 connectivity procedures
+
 ---
 
-*SunBridge Asset Atrium Manager (FGS) — Internal Use Only*
+*SunBridge Asset Atrium Manager (FGS) — Portfolio demonstration project. Not affiliated with any organisation.*

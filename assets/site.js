@@ -1,4 +1,12 @@
 ﻿(function () {
+  // Theme init (also called from inline script in <head> for FOUC prevention)
+  function applyStoredTheme() {
+    var t = localStorage.getItem('sb-theme');
+    if (t) { document.documentElement.setAttribute('data-theme', t); }
+    else if (window.matchMedia('(prefers-color-scheme:dark)').matches) { document.documentElement.setAttribute('data-theme', 'dark'); }
+    else { document.documentElement.setAttribute('data-theme', 'light'); }
+  }
+  applyStoredTheme();
   const pages = [
     { href: 'index.html', title: 'Home' },
     { href: 'platform-overview.html', title: 'Platform Overview' },
@@ -48,7 +56,18 @@
       })
       .join('');
 
-    navHost.innerHTML = `<nav class="nav" aria-label="Primary">${links}</nav>`;
+    const toggleIcon = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀' : '◐';
+    navHost.innerHTML = `<nav class="nav" aria-label="Primary">${links}<button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">${toggleIcon}</button></nav>`;
+
+    const btn = document.getElementById('theme-toggle');
+    if (btn) {
+      btn.addEventListener('click', function () {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('sb-theme', next);
+        btn.textContent = next === 'dark' ? '☀' : '◐';
+      });
+    }
   }
 
   function renderFooter() {
