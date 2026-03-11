@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>System Architecture — RepoDocs AI</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script>(function(){var t=localStorage.getItem("sb-theme");if(t)document.documentElement.setAttribute("data-theme",t);else if(window.matchMedia("(prefers-color-scheme:dark)").matches)document.documentElement.setAttribute("data-theme","dark");else document.documentElement.setAttribute("data-theme","light");})()</script>
+    <script defer src="../assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>RepoDocs AI</h1>
+            <div class="tagline">System architecture — technology stack and subsystems</div>
+          </div>
+          <div class="tagline">AI-Native Docs-as-Code Documentation System</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+    <main class="container">
+      <div class="panel">
+        <h2>Supported technology stack</h2>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>Documentation format</h3>
+            <ul>
+              <li><strong>Markdown</strong> — primary authoring format across all templates</li>
+              <li>CommonMark-compatible with front-matter YAML metadata</li>
+              <li>MDX supported for component-augmented sites (Docusaurus)</li>
+            </ul>
+            <h3>Repository platforms</h3>
+            <ul>
+              <li><strong>GitHub</strong> — primary supported platform (Actions, Pages, Copilot)</li>
+              <li>GitLab — planned for future release</li>
+              <li>Bitbucket — planned for future release</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Static documentation generators</h3>
+            <ul>
+              <li><strong>Docusaurus</strong> — React-based, MDX, versioned docs</li>
+              <li><strong>MkDocs</strong> — Python-based, Material theme, excellent search</li>
+              <li><strong>GitBook</strong> — hosted or self-hosted, git-sync workflow</li>
+              <li><strong>Next.js documentation sites</strong> — custom builds with Nextra or similar</li>
+            </ul>
+            <h3>AI tooling</h3>
+            <ul>
+              <li>GitHub Copilot (inline prompt support)</li>
+              <li>OpenAI API (batch generation workflows)</li>
+              <li>Anthropic Claude (structured prompt framework)</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>System architecture</h2>
+        <p>
+          RepoDocs AI is composed of five major subsystems that work together to provide end-to-end documentation
+          generation, validation, and maintenance. Each subsystem can be adopted independently or as part of the
+          full system.
+        </p>
+
+        <div class="mermaid">
+flowchart TD
+  REPO[Git Repository] --> TL[Documentation Template Library]
+  REPO --> MS[Metadata Schema]
+  TL --> DRAFT[Draft Documentation]
+  MS --> DRAFT
+  DRAFT --> APF[AI Prompt Framework]
+  APF --> GEN[AI-Generated Content]
+  GEN --> DT[Diagram Templates]
+  GEN --> VAL[Documentation Validation System]
+  DT --> FINAL[Final Documentation]
+  VAL --> FINAL
+  FINAL --> REPO
+        </div>
+
+        <h2>Subsystem 1: Documentation Template Library</h2>
+        <p>
+          A curated collection of Markdown templates covering the full range of SaaS API documentation needs.
+          Templates are parameterised with placeholder variables and structured according to industry-standard
+          documentation conventions.
+        </p>
+        <ul>
+          <li>API reference templates (endpoint, request/response, authentication)</li>
+          <li>Getting started guide templates</li>
+          <li>Architecture decision record (ADR) templates</li>
+          <li>Runbook and incident response templates</li>
+          <li>Changelog and release note templates</li>
+          <li>SDK and integration guide templates</li>
+        </ul>
+        <p><a href="template-library.html">Full template library documentation &rarr;</a></p>
+
+        <h2>Subsystem 2: Metadata Schema</h2>
+        <p>
+          A YAML front-matter schema applied uniformly to all documentation files. Metadata enables automated
+          tooling to index, validate, route, and render documentation consistently across repositories.
+        </p>
+        <ul>
+          <li>Required fields: <code>title</code>, <code>description</code>, <code>category</code>, <code>version</code></li>
+          <li>Optional fields: <code>tags</code>, <code>audience</code>, <code>status</code>, <code>last-reviewed</code>, <code>owner</code></li>
+          <li>Status lifecycle: <code>draft</code> &rarr; <code>review</code> &rarr; <code>published</code> &rarr; <code>deprecated</code></li>
+          <li>Machine-readable schema with JSON Schema validation support</li>
+        </ul>
+        <p><a href="template-library.html#metadata">Full metadata schema documentation &rarr;</a></p>
+
+        <h2>Subsystem 3: AI Prompt Framework</h2>
+        <p>
+          A structured library of AI prompts designed for safe, high-quality documentation generation. Each
+          prompt template includes context-setting blocks, guardrails to prevent hallucination, and output
+          format specifications that match the template library.
+        </p>
+        <ul>
+          <li>Prompt templates for API endpoints, error codes, authentication flows</li>
+          <li>Context injection patterns for codebase-grounded generation</li>
+          <li>Guardrail rules: factual grounding, tone consistency, completeness checks</li>
+          <li>Human review checkpoints integrated into the generation workflow</li>
+        </ul>
+        <p><a href="prompt-framework.html">Full AI prompt framework documentation &rarr;</a></p>
+
+        <h2>Subsystem 4: Diagram Templates</h2>
+        <p>
+          A library of diagram starter templates using Mermaid.js and PlantUML, designed for the most common
+          technical documentation diagram types. Templates embed directly in Markdown and render in GitHub,
+          Docusaurus, MkDocs, and GitBook.
+        </p>
+        <ul>
+          <li>Flowchart templates (API request flow, data pipeline, event-driven architecture)</li>
+          <li>Sequence diagram templates (authentication, webhooks, batch processing)</li>
+          <li>Entity-relationship (ER) diagram templates</li>
+          <li>State machine templates (resource lifecycle, order status)</li>
+          <li>C4 architecture diagram templates (context, container, component)</li>
+        </ul>
+        <p><a href="prompt-framework.html#diagrams">Full diagram templates documentation &rarr;</a></p>
+
+        <h2>Subsystem 5: Documentation Validation System</h2>
+        <p>
+          An automated quality gate that runs in CI to enforce documentation standards before changes are merged.
+          The validation system checks structure, metadata completeness, internal link integrity, and prose
+          quality using configurable rules.
+        </p>
+        <ul>
+          <li>YAML front-matter schema validation against the metadata schema</li>
+          <li>Internal and external link checking</li>
+          <li>Required-section presence checks per template type</li>
+          <li>Code block syntax validation</li>
+          <li>GitHub Actions workflow included out of the box</li>
+        </ul>
+        <p><a href="validation-system.html">Full validation system documentation &rarr;</a></p>
+
+        <h2>Subsystem interaction flow</h2>
+        <div class="mermaid">
+sequenceDiagram
+  autonumber
+  participant DEV as Developer
+  participant TL as Template Library
+  participant APF as AI Prompt Framework
+  participant VAL as Validation System
+  participant PR as Pull Request
+
+  DEV->>TL: Select documentation template
+  TL-->>DEV: Markdown template with placeholders
+  DEV->>APF: Apply AI prompt to fill template
+  APF-->>DEV: AI-generated draft content
+  DEV->>DEV: Review and edit AI draft
+  DEV->>PR: Open documentation pull request
+  PR->>VAL: Trigger CI validation workflow
+  VAL-->>PR: Schema, links, structure checks
+  PR-->>DEV: Review feedback and approval
+        </div>
+
+        <div class="note">
+          <strong>Incremental adoption:</strong> Teams can adopt any single subsystem independently.
+          A team might start with just the Template Library (Subsystem 1) and gradually add the AI Prompt
+          Framework (Subsystem 3) and Validation System (Subsystem 5) as their workflow matures.
+        </div>
+
+        <hr />
+        <div class="kv">
+          <div class="k">Subsystem count</div><div class="v">5</div>
+          <div class="k">Primary format</div><div class="v">Markdown with YAML front-matter</div>
+          <div class="k">Diagram tooling</div><div class="v">Mermaid.js, PlantUML</div>
+          <div class="k">CI integration</div><div class="v">GitHub Actions (GitLab CI planned)</div>
+          <div class="k">AI tooling</div><div class="v">GitHub Copilot, OpenAI API, Anthropic Claude</div>
+        </div>
+      </div>
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

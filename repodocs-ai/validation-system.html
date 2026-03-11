@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Validation System &amp; Repository Structure — RepoDocs AI</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script>(function(){var t=localStorage.getItem("sb-theme");if(t)document.documentElement.setAttribute("data-theme",t);else if(window.matchMedia("(prefers-color-scheme:dark)").matches)document.documentElement.setAttribute("data-theme","dark");else document.documentElement.setAttribute("data-theme","light");})()</script>
+    <script defer src="../assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>RepoDocs AI</h1>
+            <div class="tagline">Documentation validation system &amp; repository structure</div>
+          </div>
+          <div class="tagline">Subsystem 5 &amp; Section 6</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+    <main class="container">
+      <div class="panel">
+        <h2>Documentation Validation System</h2>
+        <p>
+          The Documentation Validation System is an automated quality gate that runs as a GitHub Actions workflow
+          on every pull request that touches documentation files. It enforces structural, metadata, and content
+          quality standards before changes are merged, preventing documentation debt from accumulating over time.
+        </p>
+        <div class="note">
+          <strong>Quality gate principle:</strong> The validation system is not a linter — it is a
+          <em>documentation contract checker</em>. It verifies that documentation meets the commitments made
+          to readers: complete metadata, working links, required sections, and valid code examples.
+        </div>
+
+        <h2>Validation checks</h2>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>Metadata validation</h3>
+            <ul>
+              <li>All required front-matter fields present and non-empty</li>
+              <li>Field values match allowed values (controlled vocabulary)</li>
+              <li><code>status</code> value is valid lifecycle state</li>
+              <li><code>category</code> matches known template categories</li>
+              <li><code>last-reviewed</code> is a valid ISO 8601 date</li>
+              <li>JSON Schema validation via ajv against <code>frontmatter.schema.json</code></li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Structure validation</h3>
+            <ul>
+              <li>Required sections present for the document <code>category</code></li>
+              <li>No unfilled <code>&#123;&#123;PLACEHOLDER&#125;&#125;</code> tokens remaining</li>
+              <li>No unresolved <code>[REVIEW NEEDED]</code> markers in published documents</li>
+              <li>Heading hierarchy is valid (no skipped levels)</li>
+              <li>Code blocks specify a language identifier</li>
+              <li>Tables have consistent column counts</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Link validation</h3>
+            <ul>
+              <li>All relative internal links resolve to existing files</li>
+              <li>Anchor links (<code>#section</code>) resolve to headings that exist</li>
+              <li>External links checked for HTTP 2xx response (configurable)</li>
+              <li>Image references resolve to files in the <code>assets/</code> directory</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Content quality checks</h3>
+            <ul>
+              <li>Prose linting via Vale with custom SaaS API style guide rules</li>
+              <li>Passive voice detection (configurable threshold)</li>
+              <li>Consistent API version references within a document</li>
+              <li>Staleness warning if <code>last-reviewed</code> is older than 180 days</li>
+              <li>Minimum word count for key section types (configurable)</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>GitHub Actions workflow</h2>
+        <p>The validation system ships as a ready-to-use GitHub Actions workflow. Drop it into <code>.github/workflows/docs-validate.yml</code> in your repository.</p>
+        <pre><code>name: Documentation Validation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**/*.md'
+      - '.repodocs/**'
+
+jobs:
+  validate:
+    name: Validate documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install RepoDocs AI validator
+        run: npm install -g @repodocs-ai/validator
+
+      - name: Validate front-matter schema
+        run: repodocs validate schema docs/
+
+      - name: Check for unfilled placeholders
+        run: repodocs validate placeholders docs/
+
+      - name: Check internal links
+        run: repodocs validate links docs/
+
+      - name: Check required sections
+        run: repodocs validate structure docs/
+
+      - name: Run Vale prose linting
+        uses: errata-ai/vale-action@reviewdog
+        with:
+          files: docs/
+          config: .repodocs/vale/.vale.ini</code></pre>
+
+        <h2>Validation CI/CD flow</h2>
+        <div class="mermaid">
+flowchart TD
+  PR[Pull request opened\nor updated] --> TRIGGER[GitHub Actions triggered\ndocs-validate.yml]
+  TRIGGER --> SCHEMA[Schema check\nfront-matter validation]
+  SCHEMA --> PLACEHOLDER[Placeholder check\nno unfilled tokens]
+  PLACEHOLDER --> LINKS[Link check\ninternal + external]
+  LINKS --> STRUCTURE[Structure check\nrequired sections]
+  STRUCTURE --> VALE[Prose linting\nVale style guide]
+  VALE --> RESULT{All checks\npassed?}
+  RESULT -->|Yes| GREEN[Green check\nPR can be merged]
+  RESULT -->|No| RED[Failed checks\nInline PR annotations]
+  RED --> FIX[Author fixes issues]
+  FIX --> PR
+        </div>
+
+        <h2>Severity levels</h2>
+        <div class="kv">
+          <div class="k">Error</div><div class="v">Blocks merge. Required for: missing required metadata, unfilled placeholders in <code>published</code> documents, broken internal links, missing required sections.</div>
+          <div class="k">Warning</div><div class="v">Does not block merge. Flagged for: broken external links, staleness (last-reviewed &gt; 180 days), passive voice above threshold, missing optional metadata.</div>
+          <div class="k">Info</div><div class="v">Informational only. Rendered in the PR summary but not in inline annotations. Examples: word count statistics, readability score, related document suggestions.</div>
+        </div>
+
+        <h2>Configuration</h2>
+        <p>The validation system is configured via <code>.repodocs/config.yml</code> at the repository root.</p>
+        <pre><code>validation:
+  schema: .repodocs/schema/frontmatter.schema.json
+  links:
+    check-external: true
+    external-timeout-ms: 5000
+    ignore-patterns:
+      - "localhost"
+      - "example.com"
+  staleness:
+    warn-after-days: 180
+    error-after-days: 365
+  prose:
+    vale-config: .repodocs/vale/.vale.ini
+    passive-voice-threshold: 10   # percent
+  placeholders:
+    error-on-status: [published, review]
+    warn-on-status: [draft]</code></pre>
+
+        <hr />
+        <h2>Repository Structure</h2>
+        <p>
+          RepoDocs AI recommends a standard directory layout for documentation in SaaS API repositories.
+          The structure separates documentation source files, templates, AI prompt files, configuration,
+          and generated or published outputs.
+        </p>
+
+        <h2>Recommended layout</h2>
+        <pre><code>your-repository/
+├── docs/                          # All documentation source files
+│   ├── api/                       # API reference documentation
+│   │   ├── authentication.md
+│   │   ├── endpoints/
+│   │   │   ├── create-payment.md
+│   │   │   └── list-payments.md
+│   │   ├── errors.md
+│   │   └── webhooks.md
+│   ├── guides/                    # Developer guides and tutorials
+│   │   ├── getting-started.md
+│   │   ├── sdk-integration.md
+│   │   └── migration-v1-v2.md
+│   ├── architecture/              # Architecture decision records and design docs
+│   │   ├── adr/
+│   │   │   ├── 001-database-choice.md
+│   │   │   └── 002-auth-strategy.md
+│   │   └── system-design.md
+│   ├── operations/                # Runbooks, playbooks, SLA definitions
+│   │   ├── runbooks/
+│   │   └── sla.md
+│   └── assets/                    # Images, diagrams, downloadable files
+│       └── diagrams/
+│
+├── .repodocs/                     # RepoDocs AI configuration
+│   ├── config.yml                 # Validation and tooling configuration
+│   ├── schema/
+│   │   └── frontmatter.schema.json  # JSON Schema for front-matter validation
+│   ├── templates/                 # Local copies of selected templates
+│   │   ├── api/
+│   │   └── guides/
+│   ├── prompts/                   # AI prompt files for this repository
+│   │   ├── endpoint-reference.prompt.md
+│   │   └── getting-started.prompt.md
+│   └── vale/                      # Vale prose linting configuration
+│       ├── .vale.ini
+│       └── styles/
+│
+└── .github/
+    └── workflows/
+        └── docs-validate.yml      # RepoDocs AI validation CI workflow</code></pre>
+
+        <h2>File naming conventions</h2>
+        <div class="kv">
+          <div class="k">Documentation files</div><div class="v">kebab-case, lowercase, <code>.md</code> extension. Example: <code>create-payment-intent.md</code></div>
+          <div class="k">ADR files</div><div class="v">Zero-padded sequence number prefix. Example: <code>001-database-choice.md</code></div>
+          <div class="k">Template files</div><div class="v"><code>template.</code> prefix, then type and <code>.md</code>. Example: <code>template.endpoint-reference.md</code></div>
+          <div class="k">Prompt files</div><div class="v"><code>.prompt.md</code> suffix. Example: <code>endpoint-reference.prompt.md</code></div>
+          <div class="k">Asset files</div><div class="v">Descriptive kebab-case. Diagrams prefixed with <code>diagram-</code>. Example: <code>diagram-oauth-flow.svg</code></div>
+        </div>
+
+        <h2>Git workflow integration</h2>
+        <p>RepoDocs AI documentation changes follow the same Git workflow as code changes:</p>
+        <ul>
+          <li>Documentation changes are committed on feature branches, not directly to the default branch</li>
+          <li>Pull requests are opened for all documentation changes, including minor corrections</li>
+          <li>The validation CI workflow runs automatically on every PR touching <code>docs/**</code></li>
+          <li>At least one reviewer approves documentation changes before merge</li>
+          <li>Documentation and code changes that belong together are committed in the same pull request</li>
+          <li>Changelog entries are updated as part of the same PR as the feature or fix they describe</li>
+        </ul>
+
+        <div class="note">
+          <strong>Co-location pattern:</strong> For repositories where documentation drift is a risk, consider
+          co-locating API reference documentation next to the source code it describes. For example, place
+          <code>create-payment.md</code> in the same directory as the controller or handler that implements
+          the endpoint, then symlink or copy it into <code>docs/api/</code> during the build.
+        </div>
+
+        <hr />
+        <div class="kv">
+          <div class="k">Validation checks</div><div class="v">4 categories: metadata, structure, links, prose quality</div>
+          <div class="k">CI integration</div><div class="v">GitHub Actions (GitLab CI template planned)</div>
+          <div class="k">Prose linting</div><div class="v">Vale with custom SaaS API style rules</div>
+          <div class="k">Configuration file</div><div class="v">.repodocs/config.yml</div>
+          <div class="k">Schema file</div><div class="v">.repodocs/schema/frontmatter.schema.json</div>
+        </div>
+      </div>
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>
