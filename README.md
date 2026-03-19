@@ -1,4 +1,4 @@
-﻿# SunBridge Asset Atrium Manager — Platform Documentation
+# SunBridge Asset Atrium Manager — Platform Documentation
 
 Enterprise HTML documentation for the SunBridge Asset Atrium Manager (FGS Asset Atrium) investment management platform. Topics include system architecture, batch processing (NAV calculation), high availability, multi-time zone fund processing, failover design, and release governance.
 
@@ -61,4 +61,4 @@ All pages support dark and light themes via a toggle button in the navigation ba
 
 ---
 
-*SunBridge Asset Atrium Manager (FGS) — Portfolio demonstration project. Not affiliated with any organisation.*
+*SunBridge Asset Atrium Manager (FGS) — Portfolio demonstration project. Not affiliated with any organization.*
