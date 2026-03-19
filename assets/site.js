@@ -79,6 +79,7 @@
         <div>&copy; ${year} &bull; SunBridge Asset Atrium Manager (FGS) &mdash; Platform Architecture &amp; Operations Documentation</div>
         <div class="small">Internal reference documentation. Not for external distribution.</div>
         <div class="small" style="margin-top:0.5rem;border-top:1px solid rgba(255,255,255,0.1);padding-top:0.5rem;font-style:italic;">&copy; ${year} Sulagna Sasmal. All rights reserved. Personal portfolio project for demonstration purposes only. Not affiliated with any organisation.</div>
+        <div class="small" style="margin-top:0.5rem;"><a href="https://sulagnasasmal.com/blog" target="_blank" rel="noopener" style="color:inherit;">Blog</a> · <a href="https://sulagnasasmal.com/" target="_blank" rel="noopener" style="color:inherit;">Portfolio</a> · <a href="https://sulagnasasmal.github.io/ai-doc-tools/" target="_blank" rel="noopener" style="color:inherit;">AI Tools</a> · <a href="https://sulagnasasmal.github.io/doc-portal/" target="_blank" rel="noopener" style="color:inherit;">DOC Portal</a></div>
       </div>
     `;
   }
