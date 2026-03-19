@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Prompt Framework &amp; Diagram Templates — RepoDocs AI</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script>(function(){var t=localStorage.getItem("sb-theme");if(t)document.documentElement.setAttribute("data-theme",t);else if(window.matchMedia("(prefers-color-scheme:dark)").matches)document.documentElement.setAttribute("data-theme","dark");else document.documentElement.setAttribute("data-theme","light");})()</script>
+    <script defer src="../assets/site.js"></script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>RepoDocs AI</h1>
+            <div class="tagline">AI prompt framework &amp; diagram templates</div>
+          </div>
+          <div class="tagline">Subsystems 3 &amp; 4</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+    <main class="container">
+      <div class="panel">
+        <h2>AI Prompt Framework</h2>
+        <p>
+          The AI Prompt Framework is a structured library of prompt templates designed to generate high-quality
+          technical documentation using AI language models. Unlike ad-hoc AI prompting, RepoDocs AI prompts are
+          engineered with context blocks, output-format constraints, guardrails, and review checkpoints that keep
+          generated content grounded, consistent, and safe to merge.
+        </p>
+        <div class="note">
+          <strong>Guardrail principle:</strong> Every prompt in the framework includes an explicit instruction
+          to cite only information provided in the context block. AI-generated content is always reviewed by a
+          human before it is marked <code>status: published</code> in the metadata schema.
+        </div>
+
+        <h2>Prompt anatomy</h2>
+        <p>Every RepoDocs AI prompt follows a five-block structure:</p>
+        <div class="kv">
+          <div class="k">1. Role block</div><div class="v">Establishes the AI persona. Always a senior technical writer familiar with SaaS API documentation conventions.</div>
+          <div class="k">2. Context block</div><div class="v">Injects the source material: API spec (OpenAPI), code comments, existing documentation, or architecture notes. This is the <em>only</em> factual source the AI may use.</div>
+          <div class="k">3. Task block</div><div class="v">Specifies the exact documentation artifact to produce: endpoint reference, error code catalogue, getting started guide, etc.</div>
+          <div class="k">4. Format block</div><div class="v">References the exact template from the Template Library. Instructs the AI to fill placeholders without changing section structure.</div>
+          <div class="k">5. Guardrail block</div><div class="v">Explicit constraints: do not invent parameters not in the context, flag any ambiguities with <code>[REVIEW NEEDED]</code>, use second-person imperative for instructions.</div>
+        </div>
+
+        <h2>Sample prompt — API endpoint reference</h2>
+        <pre><code>### ROLE
+You are a senior technical writer specialising in SaaS API documentation.
+
+### CONTEXT
+The following is the OpenAPI specification for the endpoint you will document.
+Only use information present in this context. Do not invent fields, parameters,
+or behaviour not listed here.
+
+```yaml
+{{OPENAPI_ENDPOINT_YAML}}
+```
+
+### TASK
+Write the complete API reference documentation for this endpoint.
+Cover: description, authentication, path parameters, query parameters,
+request body, response schema (200 and all error codes), and a curl example.
+
+### FORMAT
+Use the RepoDocs AI endpoint reference template exactly. Fill all
+{{PLACEHOLDER}} tokens. Do not add or remove sections.
+Include the YAML front-matter block with status: draft.
+
+### GUARDRAILS
+- If a field's purpose is ambiguous, write [REVIEW NEEDED: describe ambiguity].
+- Do not infer default values not stated in the spec.
+- Use second-person imperative voice for all instructions ("Call this endpoint to...").
+- Keep descriptions to one sentence per parameter unless a second sentence
+  is essential for correct usage.</code></pre>
+
+        <h2>Prompt library — available templates</h2>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>API documentation prompts</h3>
+            <ul>
+              <li><strong>endpoint-reference.prompt.md</strong> — full endpoint reference from OpenAPI spec</li>
+              <li><strong>authentication-guide.prompt.md</strong> — auth flow documentation from spec + code</li>
+              <li><strong>error-catalogue.prompt.md</strong> — error code table from code constants + spec</li>
+              <li><strong>webhook-reference.prompt.md</strong> — webhook event types and payload schema</li>
+              <li><strong>rate-limits.prompt.md</strong> — rate limiting rules from configuration</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Guide &amp; tutorial prompts</h3>
+            <ul>
+              <li><strong>getting-started.prompt.md</strong> — 5-minute quickstart from README + API spec</li>
+              <li><strong>sdk-integration.prompt.md</strong> — SDK guide from source code and examples</li>
+              <li><strong>migration-guide.prompt.md</strong> — version migration from changelog and diff</li>
+              <li><strong>adr.prompt.md</strong> — architecture decision record from discussion notes</li>
+              <li><strong>runbook.prompt.md</strong> — operational runbook from incident history</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>AI generation workflow</h2>
+        <div class="mermaid">
+flowchart TD
+  SOURCE[Source material\nOpenAPI spec / code / notes] --> INJECT[Inject into context block]
+  INJECT --> SELECT[Select prompt template\nfrom prompt library]
+  SELECT --> RUN[Run prompt via AI tool\nCopilot / OpenAI / Claude]
+  RUN --> DRAFT[AI-generated draft\nwith REVIEW NEEDED markers]
+  DRAFT --> HUMAN[Human review\nResolve markers, verify facts]
+  HUMAN --> STATUS{Accurate and\ncomplete?}
+  STATUS -->|Yes| PUBLISH[Set status: review\nOpen pull request]
+  STATUS -->|No| REFINE[Refine context\nor edit manually]
+  REFINE --> RUN
+        </div>
+
+        <h2>Review checklist</h2>
+        <p>After AI generation, the author reviews the draft using this checklist before opening a pull request:</p>
+        <ul>
+          <li>All <code>[REVIEW NEEDED]</code> markers resolved or removed</li>
+          <li>Every parameter name matches the actual API implementation</li>
+          <li>All code examples are syntactically correct and can be copy-pasted</li>
+          <li>Error codes are complete — no codes from the implementation are missing</li>
+          <li>Authentication instructions match the current auth mechanism</li>
+          <li>YAML front-matter <code>status</code> updated from <code>draft</code> to <code>review</code></li>
+          <li>No sensitive information (internal URLs, credentials, internal codenames) included</li>
+        </ul>
+
+        <h2 id="diagrams">Diagram Templates</h2>
+        <p>
+          The Diagram Templates subsystem provides Mermaid.js and PlantUML starter diagrams for the most common
+          technical documentation diagram types. Templates are embedded directly in Markdown and render natively
+          in GitHub pull request previews, Docusaurus, MkDocs, and GitBook.
+        </p>
+
+        <h2>API request flow</h2>
+        <div class="mermaid">
+sequenceDiagram
+  autonumber
+  participant CLIENT as API Client
+  participant GW as API Gateway
+  participant AUTH as Auth Service
+  participant SVC as Backend Service
+  participant DB as Database
+
+  CLIENT->>GW: POST /v1/{{resource}} + Bearer token
+  GW->>AUTH: Validate token
+  AUTH-->>GW: 200 OK — claims
+  GW->>SVC: Forward request + claims
+  SVC->>DB: Persist resource
+  DB-->>SVC: Saved record
+  SVC-->>GW: 201 Created + resource body
+  GW-->>CLIENT: 201 Created + resource body
+        </div>
+
+        <h2>Webhook delivery lifecycle</h2>
+        <div class="mermaid">
+stateDiagram-v2
+  [*] --> Queued : Event triggered
+  Queued --> Delivering : Worker picks up
+  Delivering --> Delivered : HTTP 2xx from endpoint
+  Delivering --> Failed : HTTP 4xx/5xx or timeout
+  Failed --> Retrying : Exponential back-off
+  Retrying --> Delivered : HTTP 2xx on retry
+  Retrying --> Dead : Max retries exceeded
+  Dead --> [*]
+  Delivered --> [*]
+        </div>
+
+        <h2>Authentication flow — OAuth 2.0 authorisation code</h2>
+        <div class="mermaid">
+sequenceDiagram
+  autonumber
+  participant USER as End User
+  participant APP as Client App
+  participant AUTH as Auth Server
+  participant API as Resource API
+
+  USER->>APP: Initiate login
+  APP->>AUTH: Redirect — /authorize?response_type=code
+  AUTH->>USER: Login + consent screen
+  USER->>AUTH: Approve
+  AUTH->>APP: Redirect with ?code=
+  APP->>AUTH: POST /token (code + client_secret)
+  AUTH-->>APP: access_token + refresh_token
+  APP->>API: GET /resource (Bearer access_token)
+  API-->>APP: 200 OK — resource data
+        </div>
+
+        <h2>Available diagram templates</h2>
+        <div class="kv">
+          <div class="k">api-request-flow.md</div><div class="v">Sequence diagram — client to gateway to service to database round trip</div>
+          <div class="k">webhook-lifecycle.md</div><div class="v">State diagram — queued, delivering, delivered, failed, retrying, dead letter</div>
+          <div class="k">oauth2-auth-code.md</div><div class="v">Sequence diagram — full OAuth 2.0 authorisation code flow</div>
+          <div class="k">oauth2-client-creds.md</div><div class="v">Sequence diagram — machine-to-machine client credentials flow</div>
+          <div class="k">data-pipeline.md</div><div class="v">Flowchart — ingest, transform, validate, load (ETL) pattern</div>
+          <div class="k">event-driven-arch.md</div><div class="v">Flowchart — producer, event bus, consumer fanout pattern</div>
+          <div class="k">resource-lifecycle.md</div><div class="v">State diagram — CRUD resource status transitions</div>
+          <div class="k">c4-context.md</div><div class="v">C4 context diagram — system, users, external systems</div>
+          <div class="k">c4-container.md</div><div class="v">C4 container diagram — web app, API, database, cache breakdown</div>
+          <div class="k">er-diagram.md</div><div class="v">Mermaid ER diagram — entity definitions with cardinality</div>
+        </div>
+
+        <div class="note">
+          All diagram templates use Mermaid.js syntax and render inline in GitHub Markdown, Docusaurus, and MkDocs.
+          PlantUML equivalents for each template are available in <code>docs/templates/diagrams/plantuml/</code>.
+        </div>
+
+        <hr />
+        <div class="kv">
+          <div class="k">Prompt templates</div><div class="v">10 (API: 5, Guides: 5)</div>
+          <div class="k">Diagram templates</div><div class="v">10 Mermaid + 10 PlantUML equivalents</div>
+          <div class="k">AI tools supported</div><div class="v">GitHub Copilot, OpenAI API, Anthropic Claude</div>
+          <div class="k">Guardrail mechanism</div><div class="v">Context-only generation + [REVIEW NEEDED] markers + human review checklist</div>
+        </div>
+      </div>
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

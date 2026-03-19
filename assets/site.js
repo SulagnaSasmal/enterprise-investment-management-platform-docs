@@ -18,27 +18,33 @@
     { href: 'database-and-configuration-updates.html', title: 'DB & Config' },
     { href: 'release-impact-summary.html', title: 'Release Impact' },
     { href: 'diagrams/index.html', title: 'Diagrams' },
+    { href: 'repodocs-ai/index.html', title: 'RepoDocs AI' },
   ];
 
   function normalizePath(pathname) {
     return (pathname || '').replace(/\\/g, '/');
   }
 
-  function inDiagramsFolder(currentPath) {
+  const subfolders = ['diagrams', 'repodocs-ai'];
+
+  function currentSubfolder(currentPath) {
     const cur = normalizePath(currentPath);
-    return cur.includes('/diagrams/');
+    return subfolders.find((s) => cur.includes('/' + s + '/')) || null;
   }
 
   function toLinkHref(currentPath, pageHref) {
-    if (!inDiagramsFolder(currentPath)) return pageHref;
-    if (pageHref.startsWith('diagrams/')) return 'index.html';
+    const subfolder = currentSubfolder(currentPath);
+    if (!subfolder) return pageHref;
+    if (pageHref.startsWith(subfolder + '/')) return pageHref.replace(subfolder + '/', '');
     return '../' + pageHref;
   }
 
   function isActive(current, href) {
     const cur = normalizePath(current);
-    if (href.startsWith('diagrams/')) {
-      return cur.endsWith('/diagrams/index.html') || cur.endsWith('/diagrams/') || cur.endsWith('diagrams/index.html');
+    for (const s of subfolders) {
+      if (href.startsWith(s + '/')) {
+        return cur.includes('/' + s + '/');
+      }
     }
     return cur.endsWith('/' + href) || cur.endsWith(href);
   }
