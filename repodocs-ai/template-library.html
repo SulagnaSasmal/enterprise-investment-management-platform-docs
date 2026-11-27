@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Template Library &amp; Metadata Schema — RepoDocs AI</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script>(function(){var t=localStorage.getItem("sb-theme");if(t)document.documentElement.setAttribute("data-theme",t);else if(window.matchMedia("(prefers-color-scheme:dark)").matches)document.documentElement.setAttribute("data-theme","dark");else document.documentElement.setAttribute("data-theme","light");})()</script>
+    <script defer src="../assets/site.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>RepoDocs AI</h1>
+            <div class="tagline">Template library &amp; metadata schema</div>
+          </div>
+          <div class="tagline">Subsystems 1 &amp; 2</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+    <main class="container">
+      <div class="panel">
+        <h2>Documentation Template Library</h2>
+        <p>
+          The Documentation Template Library is a curated set of Markdown templates that cover the full range
+          of documentation types produced by SaaS API teams. Every template is structured, parameterised, and
+          ready to fill. Templates are maintained in a <code>docs/templates/</code> directory within the
+          repository and versioned alongside the product.
+        </p>
+        <div class="note">
+          <strong>Design principle:</strong> Every template enforces a consistent heading hierarchy, required sections,
+          and a standard YAML front-matter block. Writers fill in placeholders — they do not redesign structure
+          from scratch for each document.
+        </div>
+
+        <h2>Template categories</h2>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>API reference</h3>
+            <ul>
+              <li><strong>Endpoint reference</strong> — HTTP method, path, path/query parameters, request body, response schema, error codes, examples</li>
+              <li><strong>Authentication guide</strong> — API key, OAuth 2.0, JWT bearer token, mTLS patterns</li>
+              <li><strong>Webhooks reference</strong> — event types, payload schema, delivery guarantees, retry policy, signature verification</li>
+              <li><strong>Error code catalogue</strong> — standardised table of error codes, HTTP status mapping, resolution steps</li>
+              <li><strong>Rate limiting guide</strong> — limits per tier, headers, back-off strategies</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Developer guides</h3>
+            <ul>
+              <li><strong>Getting started</strong> — prerequisites, first API call, authentication, and a working example in 5 minutes</li>
+              <li><strong>SDK integration guide</strong> — installation, initialisation, common operations, error handling</li>
+              <li><strong>Quickstart tutorial</strong> — step-by-step walkthrough of a core use case end-to-end</li>
+              <li><strong>Migration guide</strong> — version-to-version breaking changes, code diff examples, deprecation notices</li>
+              <li><strong>FAQ</strong> — structured question-answer format with category grouping</li>
+            </ul>
+          </div>
+        </div>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>Architecture &amp; design</h3>
+            <ul>
+              <li><strong>Architecture decision record (ADR)</strong> — context, decision, consequences, status, alternatives considered</li>
+              <li><strong>System design document</strong> — goals, non-goals, high-level design, component interactions, open questions</li>
+              <li><strong>Data model reference</strong> — entity definitions, field types, relationships, example JSON/YAML</li>
+              <li><strong>Integration specification</strong> — source, destination, protocol, data contract, error handling</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Operations &amp; governance</h3>
+            <ul>
+              <li><strong>Runbook</strong> — preconditions, step-by-step procedure, rollback steps, escalation contacts</li>
+              <li><strong>Incident response playbook</strong> — detection, triage, containment, resolution, post-mortem</li>
+              <li><strong>Changelog</strong> — version, date, added/changed/deprecated/removed/fixed/security sections</li>
+              <li><strong>Release notes</strong> — audience-facing summary of changes, upgrade notes, known issues</li>
+              <li><strong>SLA / SLO definition</strong> — service name, metric, target, measurement window, exclusions</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Template structure — API endpoint example</h2>
+        <p>Each template uses placeholder tokens in the format <code>&#123;&#123;PLACEHOLDER&#125;&#125;</code> to mark required content. The section hierarchy is fixed; writers fill in content without restructuring.</p>
+        <pre><code>---
+title: "{{ENDPOINT_SUMMARY}}"
+description: "{{ONE_LINE_DESCRIPTION}}"
+category: api-reference
+version: "{{API_VERSION}}"
+status: draft
+---
+
+# {{HTTP_METHOD}} {{PATH}}
+
+{{ENDPOINT_DESCRIPTION}}
+
+## Authentication
+
+{{AUTHENTICATION_REQUIREMENTS}}
+
+## Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| {{PARAM}} | {{TYPE}} | Yes | {{DESCRIPTION}} |
+
+## Query Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| {{PARAM}} | {{TYPE}} | No | {{DEFAULT}} | {{DESCRIPTION}} |
+
+## Request Body
+
+```json
+{{REQUEST_BODY_EXAMPLE}}
+```
+
+## Response
+
+### 200 OK
+
+```json
+{{RESPONSE_BODY_EXAMPLE}}
+```
+
+## Error Codes
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| {{ERROR_CODE}} | {{STATUS}} | {{DESCRIPTION}} |
+
+## Example
+
+```bash
+{{CURL_EXAMPLE}}
+```</code></pre>
+
+        <h2 id="metadata">Metadata Schema</h2>
+        <p>
+          All RepoDocs AI documentation files carry a YAML front-matter block validated against a shared JSON Schema.
+          Consistent metadata enables automated indexing, status reporting, ownership tracking, and review reminders.
+        </p>
+
+        <h2>Required fields</h2>
+        <div class="kv">
+          <div class="k"><code>title</code></div><div class="v">Human-readable page title. Used in navigation, search indexes, and link previews.</div>
+          <div class="k"><code>description</code></div><div class="v">One-sentence summary of the document. Rendered as the meta description tag.</div>
+          <div class="k"><code>category</code></div><div class="v">Document type from the controlled vocabulary: <code>api-reference</code>, <code>guide</code>, <code>architecture</code>, <code>operations</code>, <code>governance</code>.</div>
+          <div class="k"><code>version</code></div><div class="v">API or product version this document applies to. Uses semver or date-based versioning.</div>
+          <div class="k"><code>status</code></div><div class="v">Lifecycle state: <code>draft</code> | <code>review</code> | <code>published</code> | <code>deprecated</code>.</div>
+        </div>
+
+        <h2>Optional fields</h2>
+        <div class="kv">
+          <div class="k"><code>tags</code></div><div class="v">Array of keyword tags for search and filtering. Example: <code>[authentication, oauth2, security]</code>.</div>
+          <div class="k"><code>audience</code></div><div class="v">Intended reader: <code>developer</code>, <code>operator</code>, <code>architect</code>, <code>executive</code>.</div>
+          <div class="k"><code>owner</code></div><div class="v">GitHub username or team name responsible for keeping the document current.</div>
+          <div class="k"><code>last-reviewed</code></div><div class="v">ISO 8601 date of last editorial review. Used by staleness checks in the validation system.</div>
+          <div class="k"><code>related</code></div><div class="v">Array of relative paths to related documentation files.</div>
+          <div class="k"><code>api-version</code></div><div class="v">Specific API version the page documents, if different from the product <code>version</code>.</div>
+        </div>
+
+        <h2>Complete front-matter example</h2>
+        <pre><code>---
+title: "Create Payment Intent"
+description: "Creates a new payment intent to initiate a charge against a customer's payment method."
+category: api-reference
+version: "2.4"
+status: published
+tags:
+  - payments
+  - intents
+  - stripe-compatibility
+audience: developer
+owner: "@payments-team"
+last-reviewed: "2024-11-15"
+related:
+  - ../guides/payment-flow.md
+  - ./confirm-payment-intent.md
+api-version: "v2"
+---</code></pre>
+
+        <h2>Status lifecycle</h2>
+        <p>The <code>status</code> field drives automated workflows in the validation system.</p>
+        <div class="kv">
+          <div class="k"><code>draft</code></div><div class="v">Work in progress. Validation warnings are surfaced but do not fail the CI check. Not indexed by the documentation search.</div>
+          <div class="k"><code>review</code></div><div class="v">Ready for peer review. Full validation runs. Requires at least one reviewer approval before merge.</div>
+          <div class="k"><code>published</code></div><div class="v">Live documentation. Indexed by search. Changes trigger a staleness review reminder for the <code>owner</code>.</div>
+          <div class="k"><code>deprecated</code></div><div class="v">Retained for reference but no longer actively maintained. A deprecation banner is rendered automatically.</div>
+        </div>
+
+        <div class="note">
+          The metadata schema is defined in <code>.repodocs/schema/frontmatter.schema.json</code> at the root of the repository.
+          CI validates every Markdown file against this schema on every pull request.
+        </div>
+
+        <hr />
+        <div class="kv">
+          <div class="k">Templates included</div><div class="v">15 templates across 4 categories</div>
+          <div class="k">Schema format</div><div class="v">JSON Schema (Draft 7)</div>
+          <div class="k">Front-matter format</div><div class="v">YAML</div>
+          <div class="k">Validation tool</div><div class="v">ajv (Node.js) via GitHub Actions</div>
+        </div>
+      </div>
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

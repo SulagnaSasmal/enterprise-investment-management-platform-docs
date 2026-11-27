@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RepoDocs AI — Overview</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script>(function(){var t=localStorage.getItem("sb-theme");if(t)document.documentElement.setAttribute("data-theme",t);else if(window.matchMedia("(prefers-color-scheme:dark)").matches)document.documentElement.setAttribute("data-theme","dark");else document.documentElement.setAttribute("data-theme","light");})()</script>
+    <script defer src="../assets/site.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div>
+            <h1>RepoDocs AI</h1>
+            <div class="tagline">AI-Native Docs-as-Code Documentation System for SaaS APIs</div>
+          </div>
+          <div class="tagline">Version 1.0 &bull; Audience: CTOs &bull; Dev Rel &bull; Technical Writers</div>
+        </div>
+        <div id="site-nav"></div>
+      </div>
+    </header>
+    <main class="container">
+      <div class="panel">
+        <h2>Product overview</h2>
+        <p>
+          RepoDocs AI is a structured documentation system designed for SaaS teams building API-driven products.
+          The system enables engineering teams to generate high-quality API documentation rapidly, standardise
+          documentation across repositories, and integrate documentation directly into development workflows using
+          AI tools with structured prompts and guardrails.
+        </p>
+        <div class="note">
+          <strong>Docs-as-Code:</strong> RepoDocs AI is purpose-built for Docs-as-Code environments. All documentation
+          is maintained in Git repositories using Markdown, reviewed via pull requests, and validated through
+          automated CI workflows.
+        </div>
+
+        <h2>Product vision</h2>
+        <p>
+          RepoDocs AI addresses a critical gap in SaaS engineering: the lack of a systematic, repeatable, and
+          AI-assisted approach to technical documentation. By combining a curated template library with an AI
+          prompt framework and automated validation, it allows teams to produce documentation that is consistent,
+          accurate, and up-to-date with the product they are building.
+        </p>
+        <ul>
+          <li>Generate high-quality API documentation rapidly</li>
+          <li>Standardise documentation structure across all repositories</li>
+          <li>Integrate documentation into existing Git-based development workflows</li>
+          <li>Use AI tools safely with structured prompts and guardrails</li>
+          <li>Maintain documentation quality through automated review workflows</li>
+        </ul>
+
+        <h2>Target market</h2>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>Primary buyers</h3>
+            <ul>
+              <li>Startup CTO</li>
+              <li>Head of Engineering</li>
+              <li>Developer Relations Lead</li>
+              <li>Technical Writer in SaaS organisations</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Company profile</h3>
+            <ul>
+              <li>SaaS startup or scale-up</li>
+              <li>API-first platform</li>
+              <li>5–200 engineers</li>
+              <li>Documentation maintained in Git repositories</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2>Primary pain points solved</h2>
+        <ul>
+          <li><strong>Inconsistent structure</strong> — no standard template across repositories or teams</li>
+          <li><strong>Slow creation</strong> — engineers writing documentation from scratch for every feature</li>
+          <li><strong>No review standards</strong> — documentation merged without quality checks</li>
+          <li><strong>Poor API documentation quality</strong> — missing parameters, unclear error codes, no examples</li>
+          <li><strong>Documentation drift</strong> — documentation falling out of sync with code changes</li>
+        </ul>
+
+        <h2>Product goals</h2>
+        <ol>
+          <li>Reduce the time required to create API documentation</li>
+          <li>Provide reusable documentation structure via a template library</li>
+          <li>Enable AI-assisted documentation generation with safe, structured prompts</li>
+          <li>Support Git-based documentation workflows including pull request reviews</li>
+          <li>Enforce documentation quality standards through automated validation</li>
+        </ol>
+
+        <h2>RepoDocs AI subsystems</h2>
+        <p>The system is composed of five major subsystems. Follow the links below to explore each area in detail.</p>
+        <div class="grid cols-2">
+          <div class="panel">
+            <h3>Architecture &amp; technology stack</h3>
+            <p>Supported documentation formats, repository platforms, static site generators, and the five-subsystem architecture overview.</p>
+            <p><a href="architecture.html">View architecture &rarr;</a></p>
+          </div>
+          <div class="panel">
+            <h3>Template library &amp; metadata schema</h3>
+            <p>Reusable Markdown templates for API reference, getting started guides, architecture documents, and runbooks. Includes YAML front-matter schema.</p>
+            <p><a href="template-library.html">View template library &rarr;</a></p>
+          </div>
+          <div class="panel">
+            <h3>AI prompt framework &amp; diagram templates</h3>
+            <p>Structured prompt library for AI-assisted documentation generation, with guardrails, review checklists, and Mermaid/PlantUML diagram starters.</p>
+            <p><a href="prompt-framework.html">View prompt framework &rarr;</a></p>
+          </div>
+          <div class="panel">
+            <h3>Validation system &amp; repository structure</h3>
+            <p>Automated documentation quality checks, GitHub Actions CI integration, linting rules, and recommended repository layout conventions.</p>
+            <p><a href="validation-system.html">View validation system &rarr;</a></p>
+          </div>
+        </div>
+
+        <hr />
+        <div class="kv">
+          <div class="k">Version</div><div class="v">1.0</div>
+          <div class="k">Product type</div><div class="v">Documentation Template System + AI Prompt Framework</div>
+          <div class="k">Primary format</div><div class="v">Markdown</div>
+          <div class="k">Primary platform</div><div class="v">GitHub (GitLab and Bitbucket planned)</div>
+          <div class="k">Target audience</div><div class="v">SaaS engineering teams, 5–200 engineers</div>
+        </div>
+      </div>
+      <div id="site-footer"></div>
+    </main>
+  </body>
+</html>

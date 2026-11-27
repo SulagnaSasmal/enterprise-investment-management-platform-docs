@@ -22,6 +22,11 @@ Static HTML site hosted via GitHub Pages. No build tools or backend required.
 | `database-and-configuration-updates.html` | Oracle schema management, Liquibase, reference data |
 | `release-impact-summary.html` | Release governance — CAB, ops readiness, risk assessment |
 | `diagrams/index.html` | Mermaid diagram library |
+| `repodocs-ai/index.html` | RepoDocs AI — product overview, vision, target market, goals |
+| `repodocs-ai/architecture.html` | RepoDocs AI — tech stack and five-subsystem architecture |
+| `repodocs-ai/template-library.html` | RepoDocs AI — documentation template library and metadata schema |
+| `repodocs-ai/prompt-framework.html` | RepoDocs AI — AI prompt framework and diagram templates |
+| `repodocs-ai/validation-system.html` | RepoDocs AI — validation system and repository structure |
 
 ## Technology
 
@@ -51,6 +56,7 @@ All pages support dark and light themes via a toggle button in the navigation ba
 | Database & configuration management | Complete |
 | Release governance framework | Complete |
 | Dark / light theme support | Complete |
+| RepoDocs AI documentation | Complete |
 
 ## Future Enhancements
 
